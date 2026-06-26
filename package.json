@@ -6,7 +6,8 @@
   "module": "src/core/index.ts",
   "exports": {
     ".": "./src/core/index.ts",
-    "./react": "./src/react/index.ts"
+    "./react": "./src/react/index.ts",
+    "./next": "./src/next/index.ts"
   },
   "peerDependencies": {
     "react": ">=18"
