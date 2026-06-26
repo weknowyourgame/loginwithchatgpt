@@ -7,4 +7,10 @@ export {
   type LoginOptions,
 } from "./auth.ts";
 export { createClient } from "./client.ts";
-export { fileStore, type TokenStore, type Tokens } from "./store.ts";
+export {
+  fileStore,
+  encryptedFileStore,
+  defaultStore,
+  type TokenStore,
+  type Tokens,
+} from "./store.ts";

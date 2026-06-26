@@ -1,5 +1,5 @@
 import { config } from "./config.ts";
-import { fileStore, type TokenStore } from "./store.ts";
+import { defaultStore, type TokenStore } from "./store.ts";
 import { accountInfo, refreshTokens } from "./tokens.ts";
 
 export interface RespondOptions {
@@ -64,7 +64,7 @@ async function* parseSse(res: Response): AsyncGenerator<string> {
  * expired or on a 401. Targets the Codex `/responses` endpoint; the request shape is
  * isolated here as the most likely thing to need adjustment.
  */
-export function createClient(store: TokenStore = fileStore) {
+export function createClient(store: TokenStore = defaultStore) {
   async function freshTokens() {
     let tokens = await store.load();
     if (!tokens) throw new Error("Not authenticated.");

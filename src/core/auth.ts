@@ -1,7 +1,7 @@
 import { createPkce } from "./pkce.ts";
 import { waitForCode } from "./loopback.ts";
 import { accountInfo, authorizeUrl, exchangeCode, refreshTokens } from "./tokens.ts";
-import { fileStore, type TokenStore, type Tokens } from "./store.ts";
+import { defaultStore, type TokenStore, type Tokens } from "./store.ts";
 
 export interface Session {
   account: { email?: string; id?: string };
@@ -40,7 +40,7 @@ async function openSystemBrowser(url: string): Promise<void> {
 
 /** Run the full loopback OAuth flow and persist the resulting tokens. */
 export async function login(opts: LoginOptions = {}): Promise<Session> {
-  const store = opts.store ?? fileStore;
+  const store = opts.store ?? defaultStore;
   const pkce = createPkce();
   const url = authorizeUrl(pkce);
 
@@ -55,17 +55,17 @@ export async function login(opts: LoginOptions = {}): Promise<Session> {
   return toSession(tokens);
 }
 
-export async function getSession(store: TokenStore = fileStore): Promise<Session | null> {
+export async function getSession(store: TokenStore = defaultStore): Promise<Session | null> {
   const tokens = await store.load();
   return tokens ? toSession(tokens) : null;
 }
 
-export async function logout(store: TokenStore = fileStore): Promise<void> {
+export async function logout(store: TokenStore = defaultStore): Promise<void> {
   await store.clear();
 }
 
 /** Force a token refresh and persist the result. */
-export async function refresh(store: TokenStore = fileStore): Promise<Session> {
+export async function refresh(store: TokenStore = defaultStore): Promise<Session> {
   const tokens = await store.load();
   if (!tokens) throw new Error("Not authenticated.");
   const next = await refreshTokens(tokens.refresh_token);

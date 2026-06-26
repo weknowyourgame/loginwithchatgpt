@@ -1,6 +1,7 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { mkdir } from "node:fs/promises";
+import { decrypt, encrypt } from "./crypto.ts";
 
 /**
  * Tokens as returned by the OAuth token endpoint, plus a computed absolute expiry.
@@ -22,7 +23,9 @@ export interface TokenStore {
 
 const dir = join(homedir(), ".loginwithchatgpt");
 const file = join(dir, "tokens.json");
+const encFile = join(dir, "tokens.enc");
 
+/** Plaintext JSON store. Useful for debugging; not for production. */
 export const fileStore: TokenStore = {
   async load() {
     const f = Bun.file(file);
@@ -43,3 +46,31 @@ export const fileStore: TokenStore = {
     }
   },
 };
+
+/** AES-256-GCM store with a keychain-backed key. The default. */
+export const encryptedFileStore: TokenStore = {
+  async load() {
+    const f = Bun.file(encFile);
+    if (!(await f.exists())) return null;
+    const payload = (await f.text()).trim();
+    if (!payload) return null;
+    try {
+      return JSON.parse(await decrypt(payload)) as Tokens;
+    } catch {
+      return null; // corrupt or key mismatch → treat as logged out
+    }
+  },
+  async save(tokens) {
+    await mkdir(dir, { recursive: true });
+    await Bun.write(encFile, await encrypt(JSON.stringify(tokens)));
+  },
+  async clear() {
+    try {
+      await Bun.$`rm -f ${encFile}`.quiet();
+    } catch {
+      /* ignore */
+    }
+  },
+};
+
+export const defaultStore: TokenStore = encryptedFileStore;
