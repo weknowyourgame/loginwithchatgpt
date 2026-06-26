@@ -1,89 +1,64 @@
 // CLI exercising the core engine: login / whoami / call / refresh / logout.
 import {
-  accountInfo,
-  authorizeUrl,
   createClient,
-  createPkce,
-  exchangeCode,
-  fileStore,
-  refreshTokens,
-  waitForCode,
+  getSession,
+  login,
+  logout,
+  refresh,
 } from "./core/index.ts";
 
 const log = (...a: unknown[]) => console.log(...a);
 
-async function openBrowser(url: string) {
-  const cmd =
-    process.platform === "darwin" ? ["open", url]
-    : process.platform === "win32" ? ["cmd", "/c", "start", "", url]
-    : ["xdg-open", url];
-  try {
-    await Bun.spawn(cmd).exited;
-  } catch {
-    /* fall back to manual */
-  }
+async function loginCmd() {
+  const session = await login({
+    onUrl: (url) => {
+      log("\n🔐  Opening ChatGPT login in your browser…");
+      log("    If it doesn't open, paste this URL:\n");
+      log(`    ${url}\n`);
+    },
+  });
+  log("🎉  Connected!");
+  log(`    account : ${session.account.email ?? session.account.id ?? "(unknown)"}`);
+  log(`    plan    : ${session.plan.name ?? "(unknown)"}\n`);
 }
 
-async function login() {
-  const pkce = createPkce();
-  const url = authorizeUrl(pkce);
-
-  log("\n🔐  Opening ChatGPT login in your browser…");
-  log("    If it doesn't open, paste this URL:\n");
-  log(`    ${url}\n`);
-
-  const codePromise = waitForCode(pkce.state); // start listening BEFORE opening browser
-  await openBrowser(url);
-  const code = await codePromise;
-
-  log("✅  Got authorization code, exchanging for tokens…");
-  const tokens = await exchangeCode(code, pkce.verifier);
-  await fileStore.save(tokens);
-
-  const info = accountInfo(tokens);
-  log("\n🎉  Connected!");
-  log(`    account : ${info.email ?? info.accountId ?? "(unknown)"}`);
-  log(`    plan    : ${info.plan ?? "(unknown)"}`);
-  log(`    expires : ${new Date(tokens.expires_at).toLocaleString()}\n`);
+async function whoamiCmd() {
+  const session = await getSession();
+  if (!session) return log("Not logged in. Run `bun run login`.");
+  log(`account : ${session.account.email ?? session.account.id ?? "(unknown)"}`);
+  log(`plan    : ${session.plan.name ?? "(unknown)"}`);
+  log(`status  : ${session.status}`);
 }
 
-async function whoami() {
-  const tokens = await fileStore.load();
-  if (!tokens) return log("Not logged in. Run `bun run login`.");
-  const info = accountInfo(tokens);
-  log(`account : ${info.email ?? info.accountId ?? "(unknown)"}`);
-  log(`plan    : ${info.plan ?? "(unknown)"}`);
-  log(`expires : ${new Date(tokens.expires_at).toLocaleString()}`);
-  log(`valid   : ${Date.now() < tokens.expires_at ? "yes" : "expired"}`);
-}
-
-async function call() {
+async function callCmd() {
   const prompt = process.argv.slice(3).join(" ") || "Say hello in one short sentence.";
   log(`\n💬  Prompt: ${prompt}\n`);
-  const chatgpt = createClient();
-  const out = await chatgpt.respond(prompt);
+  const out = await createClient().respond(prompt);
   log("📦  Raw response:\n");
   log(out);
   log("");
 }
 
-async function refresh() {
-  const tokens = await fileStore.load();
-  if (!tokens) return log("Not logged in. Run `bun run login`.");
+async function refreshCmd() {
   log("🔄  Refreshing…");
-  const next = await refreshTokens(tokens.refresh_token);
-  await fileStore.save(next);
-  log(`✅  New access token expires: ${new Date(next.expires_at).toLocaleString()}`);
+  const session = await refresh();
+  log(`✅  Refreshed. status: ${session.status}`);
 }
 
-async function logout() {
-  await fileStore.clear();
+async function logoutCmd() {
+  await logout();
   log("👋  Logged out, tokens cleared.");
 }
 
-const cmd = process.argv[2] ?? "login";
-const commands: Record<string, () => Promise<void>> = { login, whoami, call, refresh, logout };
+const commands: Record<string, () => Promise<void>> = {
+  login: loginCmd,
+  whoami: whoamiCmd,
+  call: callCmd,
+  refresh: refreshCmd,
+  logout: logoutCmd,
+};
 
+const cmd = process.argv[2] ?? "login";
 const run = commands[cmd];
 if (!run) {
   log(`Unknown command: ${cmd}`);

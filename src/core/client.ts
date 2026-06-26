@@ -3,16 +3,14 @@ import { fileStore, type TokenStore } from "./store.ts";
 import { accountInfo, refreshTokens } from "./tokens.ts";
 
 /**
- * The self-healing AI client. It loads tokens from the
- * store, auto-refreshes when expired (or on a 401), and bills the user's subscription.
- *
- * In the spike this targets the Codex `/responses` endpoint. The exact request shape is
- * the part most likely to need adjustment — it's isolated here on purpose.
+ * Self-healing client that bills the user's subscription. Auto-refreshes tokens when
+ * expired or on a 401. Targets the Codex `/responses` endpoint; the request shape is
+ * isolated here as the most likely thing to need adjustment.
  */
 export function createClient(store: TokenStore = fileStore) {
   async function freshTokens() {
     let tokens = await store.load();
-    if (!tokens) throw new Error("Not logged in. Run `bun run login` first.");
+    if (!tokens) throw new Error("Not authenticated.");
     if (Date.now() >= tokens.expires_at) {
       tokens = await refreshTokens(tokens.refresh_token);
       await store.save(tokens);
