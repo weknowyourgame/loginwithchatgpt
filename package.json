@@ -5,7 +5,16 @@
   "type": "module",
   "module": "src/core/index.ts",
   "exports": {
-    ".": "./src/core/index.ts"
+    ".": "./src/core/index.ts",
+    "./react": "./src/react/index.ts"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
   },
   "scripts": {
     "login": "bun run src/spike.ts login",
@@ -15,6 +24,8 @@
     "logout": "bun run src/spike.ts logout"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/react": "^19.2.17",
+    "react": "^19.2.7"
   }
 }
