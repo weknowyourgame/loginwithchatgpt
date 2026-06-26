@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "module": "src/spike.ts",
+  "module": "src/core/index.ts",
+  "exports": {
+    ".": "./src/core/index.ts"
+  },
   "scripts": {
     "login": "bun run src/spike.ts login",
     "call": "bun run src/spike.ts call",

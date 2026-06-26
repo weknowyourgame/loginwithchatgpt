@@ -1,19 +1,14 @@
-/**
- * Phase 0 feasibility spike — runnable.
- *
- *   bun run login     → full loopback OAuth, store tokens
- *   bun run whoami    → show connected account + plan
- *   bun run call      → make one AI call billed to the subscription
- *   bun run refresh   → force a token refresh
- *   bun run logout    → clear stored tokens
- *
- * Proves the Phase 0 gate: token mints, call bills the sub, refresh works.
- */
-import { createClient } from "./client.ts";
-import { createPkce } from "./pkce.ts";
-import { fileStore } from "./store.ts";
-import { accountInfo, authorizeUrl, exchangeCode, refreshTokens } from "./tokens.ts";
-import { waitForCode } from "./loopback.ts";
+// CLI exercising the core engine: login / whoami / call / refresh / logout.
+import {
+  accountInfo,
+  authorizeUrl,
+  createClient,
+  createPkce,
+  exchangeCode,
+  fileStore,
+  refreshTokens,
+  waitForCode,
+} from "./core/index.ts";
 
 const log = (...a: unknown[]) => console.log(...a);
 
