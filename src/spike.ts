@@ -34,9 +34,17 @@ async function callCmd() {
   const prompt = process.argv.slice(3).join(" ") || "Say hello in one short sentence.";
   log(`\n💬  Prompt: ${prompt}\n`);
   const out = await createClient().respond(prompt);
-  log("📦  Raw response:\n");
   log(out);
   log("");
+}
+
+async function streamCmd() {
+  const prompt = process.argv.slice(3).join(" ") || "Count to five.";
+  log(`\n💬  Prompt: ${prompt}\n`);
+  for await (const delta of createClient().stream(prompt)) {
+    process.stdout.write(delta);
+  }
+  log("\n");
 }
 
 async function refreshCmd() {
@@ -54,6 +62,7 @@ const commands: Record<string, () => Promise<void>> = {
   login: loginCmd,
   whoami: whoamiCmd,
   call: callCmd,
+  stream: streamCmd,
   refresh: refreshCmd,
   logout: logoutCmd,
 };
@@ -62,7 +71,7 @@ const cmd = process.argv[2] ?? "login";
 const run = commands[cmd];
 if (!run) {
   log(`Unknown command: ${cmd}`);
-  log("Usage: bun run [login|whoami|call|refresh|logout]");
+  log("Usage: bun run [login|whoami|call|stream|refresh|logout]");
   process.exit(1);
 }
 run().catch((err) => {
