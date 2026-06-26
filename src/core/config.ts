@@ -12,4 +12,7 @@ export const config = {
 
   // The ChatGPT backend that bills the user's subscription.
   responsesUrl: "https://chatgpt.com/backend-api/codex/responses",
+
+  // Codex-scoped: ChatGPT-account tokens only accept Codex models, not general chat models.
+  defaultModel: "gpt-5-codex",
 } as const;

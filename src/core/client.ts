@@ -80,7 +80,7 @@ export function createClient(store: TokenStore = fileStore) {
     const { accountId } = accountInfo(tokens);
 
     const body = JSON.stringify({
-      model: opts.model ?? "gpt-5.4",
+      model: opts.model ?? config.defaultModel,
       instructions: opts.instructions ?? "You are a helpful assistant.",
       input: [{ role: "user", content: [{ type: "input_text", text: input }] }],
       stream,
