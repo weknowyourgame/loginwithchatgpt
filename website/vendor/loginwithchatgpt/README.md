@@ -177,6 +177,10 @@ targets the Codex `/responses` endpoint and requires an account with Codex acces
 The client config (client id, endpoints) tracks OpenAI's public Codex client and may need
 updating if OpenAI rotates it; it is isolated in a single file.
 
+## Repository
+
+[github.com/weknowyourgame/loginwithchatgpt](https://github.com/weknowyourgame/loginwithchatgpt)
+
 ## License
 
 MIT

@@ -5,7 +5,6 @@ next-env.d.ts
 !.env.example
 node_modules
 .next
-dist
 coverage
 playwright-report
 .DS_Store
