@@ -18,7 +18,7 @@ export interface LoginOptions {
   openBrowser?: boolean;
 }
 
-function toSession(tokens: Tokens): Session {
+export function toSession(tokens: Tokens): Session {
   const info = accountInfo(tokens);
   return {
     account: { email: info.email, id: info.accountId },
@@ -54,6 +54,42 @@ export async function login(opts: LoginOptions = {}): Promise<Session> {
   const tokens = await exchangeCode(code, pkce.verifier);
   await store.save(tokens);
   return toSession(tokens);
+}
+
+export interface HeadlessLogin {
+  /** Open in any browser, approve, then pass the redirected code (or full URL) to complete(). */
+  url: string;
+  complete(codeOrUrl: string): Promise<Session>;
+}
+
+/** Accept either a raw code or the full redirected URL containing it. */
+function extractCode(input: string, expectedState: string): string {
+  const trimmed = input.trim();
+  if (!trimmed.includes("://") && !trimmed.includes("?")) return trimmed;
+  const url = new URL(trimmed);
+  const code = url.searchParams.get("code");
+  const state = url.searchParams.get("state");
+  if (!code) throw new Error("No code found in the pasted URL");
+  if (state && state !== expectedState) throw new Error("State mismatch — possible CSRF");
+  return code;
+}
+
+/**
+ * Headless login for environments where the loopback redirect can't be caught
+ * (SSH, containers, CI). Returns the authorize URL and a complete() to call with the
+ * code the user copies from the browser after approving.
+ */
+export function startLogin(opts: { store?: TokenStore } = {}): HeadlessLogin {
+  const store = opts.store ?? defaultStore;
+  const pkce = createPkce();
+  return {
+    url: authorizeUrl(pkce),
+    async complete(codeOrUrl: string): Promise<Session> {
+      const tokens = await exchangeCode(extractCode(codeOrUrl, pkce.state), pkce.verifier);
+      await store.save(tokens);
+      return toSession(tokens);
+    },
+  };
 }
 
 export async function getSession(store: TokenStore = defaultStore): Promise<Session | null> {

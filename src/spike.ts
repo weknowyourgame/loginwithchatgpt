@@ -5,11 +5,63 @@ import {
   login,
   logout,
   refresh,
+  startDeviceLogin,
+  startLogin,
 } from "./core/index";
 
 const log = (...a: unknown[]) => console.log(...a);
 
+function ask(question: string): Promise<string> {
+  return new Promise((resolve) => {
+    process.stdout.write(question);
+    process.stdin.resume();
+    process.stdin.once("data", (d: Buffer) => {
+      process.stdin.pause();
+      resolve(d.toString().trim());
+    });
+  });
+}
+
+function printConnected(session: { account: { email?: string; id?: string }; plan: { name?: string } }) {
+  log("🎉  Connected!");
+  log(`    account : ${session.account.email ?? session.account.id ?? "(unknown)"}`);
+  log(`    plan    : ${session.plan.name ?? "(unknown)"}\n`);
+}
+
 async function loginCmd() {
+  // Device code: show a code, user enters it on an OpenAI page, we poll (web/headless).
+  if (process.argv.includes("--device")) {
+    const flow = await startDeviceLogin();
+    log("\n🔐  Open this page and enter the code:\n");
+    log(`    ${flow.verificationUrl}`);
+    log(`    code: ${flow.userCode}\n`);
+    log("    First time? Enable device code authorization in ChatGPT →");
+    log("    Settings → Security & Login.\n");
+    log("    Waiting for authorization…");
+    printConnected(await flow.wait());
+    return;
+  }
+
+  // Headless: print the URL, let the user paste the code back (SSH/containers/CI).
+  if (process.argv.includes("--headless")) {
+    const flow = startLogin();
+    log("\n🔐  Open this URL in any browser and approve:\n");
+    log(`    ${flow.url}\n`);
+    log("    Then copy the code from the redirected address bar (or the whole URL).");
+    log("    Codes expire in ~1 minute, so paste it promptly.");
+    const pasted = await ask("\nPaste code/URL: ");
+    try {
+      printConnected(await flow.complete(pasted));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (/invalid_grant|expired|400/.test(msg)) {
+        throw new Error("Code was rejected — it likely expired or was already used. Re-run `bun run login --headless` and paste quickly.");
+      }
+      throw err;
+    }
+    return;
+  }
+
   const session = await login({
     onUrl: (url) => {
       log("\n🔐  Opening ChatGPT login in your browser…");
@@ -17,9 +69,7 @@ async function loginCmd() {
       log(`    ${url}\n`);
     },
   });
-  log("🎉  Connected!");
-  log(`    account : ${session.account.email ?? session.account.id ?? "(unknown)"}`);
-  log(`    plan    : ${session.plan.name ?? "(unknown)"}\n`);
+  printConnected(session);
 }
 
 async function whoamiCmd() {

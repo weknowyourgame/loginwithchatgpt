@@ -15,4 +15,11 @@ export const config = {
 
   // Codex-scoped: ChatGPT-account tokens only accept Codex models, not general chat models.
   defaultModel: "gpt-5-codex",
+
+  // Device-code flow (headless / web, no loopback). Requires the user to enable device
+  // code authorization in ChatGPT Settings -> Security & Login.
+  deviceUserCodeUrl: "https://auth.openai.com/api/accounts/deviceauth/usercode",
+  devicePollUrl: "https://auth.openai.com/api/accounts/deviceauth/token",
+  deviceVerificationUrl: "https://auth.openai.com/codex/device",
+  deviceRedirectUri: "https://auth.openai.com/deviceauth/callback",
 } as const;

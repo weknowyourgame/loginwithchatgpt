@@ -36,14 +36,18 @@ const withExpiry = (raw: RawTokenResponse): Tokens => ({
 });
 
 /** Exchange an authorization code + PKCE verifier for tokens. */
-export async function exchangeCode(code: string, verifier: string): Promise<Tokens> {
+export async function exchangeCode(
+  code: string,
+  verifier: string,
+  redirectUri: string = config.redirectUri,
+): Promise<Tokens> {
   const res = await fetch(config.tokenUrl, {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
       grant_type: "authorization_code",
       code,
-      redirect_uri: config.redirectUri,
+      redirect_uri: redirectUri,
       client_id: config.clientId,
       code_verifier: verifier,
     }),

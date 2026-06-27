@@ -94,6 +94,8 @@ import { login, logout, getSession, refresh, createClient } from "loginwithchatg
 | Function               | Description                                                          |
 | ---------------------- | -------------------------------------------------------------------- |
 | `login(options?)`      | Runs the loopback OAuth flow and stores tokens. Returns the session. |
+| `startLogin(options?)` | Headless variant for SSH/containers/CI. Returns `{ url, complete }`.  |
+| `startDeviceLogin(options?)` | Device-code flow for web/headless. Returns `{ userCode, verificationUrl, wait }`. |
 | `logout(store?)`       | Clears stored tokens.                                                |
 | `getSession(store?)`   | Returns the current session, or `null`.                              |
 | `refresh(store?)`      | Forces a token refresh.                                              |
@@ -157,6 +159,8 @@ The repo includes a small CLI that exercises the engine directly:
 
 ```bash
 bun run login     # run the OAuth flow and store tokens
+bun run login --device     # device-code flow (shows a code, works in web/headless)
+bun run login --headless   # paste-the-code flow for SSH/containers/CI
 bun run whoami    # show the connected account and plan
 bun run call      # one AI call billed to the subscription
 bun run stream    # the same call, streamed
