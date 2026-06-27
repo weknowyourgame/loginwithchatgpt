@@ -1,7 +1,11 @@
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
-import { chmod } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { promisify } from "node:util";
+
+const run = promisify(execFile);
 
 const SERVICE = "loginwithchatgpt";
 const ACCOUNT = "token-key";
@@ -9,8 +13,8 @@ const keyFile = join(homedir(), ".loginwithchatgpt", "key");
 
 async function keychainGet(): Promise<Buffer | null> {
   try {
-    const out = await Bun.$`security find-generic-password -a ${ACCOUNT} -s ${SERVICE} -w`.quiet().text();
-    return out.trim() ? Buffer.from(out.trim(), "base64") : null;
+    const { stdout } = await run("security", ["find-generic-password", "-a", ACCOUNT, "-s", SERVICE, "-w"]);
+    return stdout.trim() ? Buffer.from(stdout.trim(), "base64") : null;
   } catch {
     return null;
   }
@@ -18,7 +22,7 @@ async function keychainGet(): Promise<Buffer | null> {
 
 async function keychainSet(key: Buffer): Promise<boolean> {
   try {
-    await Bun.$`security add-generic-password -a ${ACCOUNT} -s ${SERVICE} -w ${key.toString("base64")} -U`.quiet();
+    await run("security", ["add-generic-password", "-a", ACCOUNT, "-s", SERVICE, "-w", key.toString("base64"), "-U"]);
     return true;
   } catch {
     return false;
@@ -26,14 +30,17 @@ async function keychainSet(key: Buffer): Promise<boolean> {
 }
 
 async function fileGet(): Promise<Buffer | null> {
-  const f = Bun.file(keyFile);
-  if (!(await f.exists())) return null;
-  const b64 = (await f.text()).trim();
-  return b64 ? Buffer.from(b64, "base64") : null;
+  try {
+    const b64 = (await readFile(keyFile, "utf8")).trim();
+    return b64 ? Buffer.from(b64, "base64") : null;
+  } catch {
+    return null;
+  }
 }
 
 async function fileSet(key: Buffer): Promise<void> {
-  await Bun.write(keyFile, key.toString("base64"));
+  await mkdir(dirname(keyFile), { recursive: true });
+  await writeFile(keyFile, key.toString("base64"));
   await chmod(keyFile, 0o600);
 }
 

@@ -1,6 +1,6 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { decrypt, encrypt } from "./crypto.ts";
 
 /**
@@ -25,34 +25,33 @@ const dir = join(homedir(), ".loginwithchatgpt");
 const file = join(dir, "tokens.json");
 const encFile = join(dir, "tokens.enc");
 
+const read = async (path: string): Promise<string | null> => {
+  try {
+    return await readFile(path, "utf8");
+  } catch {
+    return null;
+  }
+};
+
 /** Plaintext JSON store. Useful for debugging; not for production. */
 export const fileStore: TokenStore = {
   async load() {
-    const f = Bun.file(file);
-    if (!(await f.exists())) return null;
-    return (await f.json()) as Tokens;
+    const raw = await read(file);
+    return raw ? (JSON.parse(raw) as Tokens) : null;
   },
   async save(tokens) {
     await mkdir(dir, { recursive: true });
-    await Bun.write(file, JSON.stringify(tokens, null, 2));
+    await writeFile(file, JSON.stringify(tokens, null, 2));
   },
   async clear() {
-    const f = Bun.file(file);
-    if (await f.exists()) await Bun.write(file, "");
-    try {
-      await Bun.$`rm -f ${file}`.quiet();
-    } catch {
-      /* ignore */
-    }
+    await rm(file, { force: true });
   },
 };
 
 /** AES-256-GCM store with a keychain-backed key. The default. */
 export const encryptedFileStore: TokenStore = {
   async load() {
-    const f = Bun.file(encFile);
-    if (!(await f.exists())) return null;
-    const payload = (await f.text()).trim();
+    const payload = (await read(encFile))?.trim();
     if (!payload) return null;
     try {
       return JSON.parse(await decrypt(payload)) as Tokens;
@@ -62,14 +61,10 @@ export const encryptedFileStore: TokenStore = {
   },
   async save(tokens) {
     await mkdir(dir, { recursive: true });
-    await Bun.write(encFile, await encrypt(JSON.stringify(tokens)));
+    await writeFile(encFile, await encrypt(JSON.stringify(tokens)));
   },
   async clear() {
-    try {
-      await Bun.$`rm -f ${encFile}`.quiet();
-    } catch {
-      /* ignore */
-    }
+    await rm(encFile, { force: true });
   },
 };
 

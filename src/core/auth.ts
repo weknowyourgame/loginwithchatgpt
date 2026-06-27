@@ -1,3 +1,4 @@
+import { spawn } from "node:child_process";
 import { createPkce } from "./pkce.ts";
 import { waitForCode } from "./loopback.ts";
 import { accountInfo, authorizeUrl, exchangeCode, refreshTokens } from "./tokens.ts";
@@ -26,13 +27,13 @@ function toSession(tokens: Tokens): Session {
   };
 }
 
-async function openSystemBrowser(url: string): Promise<void> {
-  const cmd =
+function openSystemBrowser(url: string): void {
+  const [cmd, ...args] =
     process.platform === "darwin" ? ["open", url]
     : process.platform === "win32" ? ["cmd", "/c", "start", "", url]
     : ["xdg-open", url];
   try {
-    await Bun.spawn(cmd).exited;
+    spawn(cmd, args, { stdio: "ignore", detached: true }).unref();
   } catch {
     // Caller can still complete login via the onUrl-displayed link.
   }
