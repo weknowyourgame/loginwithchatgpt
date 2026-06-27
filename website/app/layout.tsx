@@ -12,6 +12,8 @@ import {
   GeistPixelLine
 } from "geist/font/pixel";
 
+import { Analytics } from "@vercel/analytics/next";
+
 import { HomeLink } from "@/components/home-link";
 import { RouteAwareSiteFooter } from "@/components/route-aware-site-footer";
 import { SiteMarkIcon } from "@/components/site-mark-icon";
@@ -110,6 +112,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </div>
         <div className="flex min-h-0 flex-1 flex-col">{children}</div>
         <RouteAwareSiteFooter />
+        <Analytics />
       </body>
     </html>
   );

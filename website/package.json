@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
+    "@vercel/analytics": "^2.0.1",
     "framer-motion": "^12.38.0",
     "geist": "^1.7.0",
     "loginwithchatgpt": "file:./vendor/loginwithchatgpt",
