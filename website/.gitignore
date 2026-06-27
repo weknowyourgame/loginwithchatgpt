@@ -6,6 +6,10 @@ next-env.d.ts
 node_modules
 .next
 coverage
+
+# The vendored SDK build MUST be committed (overrides global gitignore's "dist").
+!vendor/loginwithchatgpt/dist/
+!vendor/loginwithchatgpt/dist/**
 playwright-report
 .DS_Store
 *.tsbuildinfo
