@@ -7,9 +7,12 @@ node_modules
 .next
 coverage
 
-# The vendored SDK build MUST be committed (overrides global gitignore's "dist").
+# These dirs are source the deploy needs — override the global gitignore
+# (which ignores "dist" and "lib/" everywhere).
 !vendor/loginwithchatgpt/dist/
 !vendor/loginwithchatgpt/dist/**
+!lib/
+!lib/**
 playwright-report
 .DS_Store
 *.tsbuildinfo
