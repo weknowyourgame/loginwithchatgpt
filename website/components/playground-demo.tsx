@@ -1,16 +1,98 @@
 "use client";
 
-import { useState } from "react";
-import { LoginWithChatGPT, useChatGPTAuth } from "loginwithchatgpt/react";
+import { useEffect, useRef, useState } from "react";
+
+type Phase = "idle" | "pending" | "connected";
+
+interface Account {
+  email?: string;
+  id?: string;
+}
 
 export function PlaygroundDemo() {
-  const { status, account, plan } = useChatGPTAuth();
+  const [phase, setPhase] = useState<Phase>("idle");
+  const [userCode, setUserCode] = useState("");
+  const [verificationUrl, setVerificationUrl] = useState("");
+  const [account, setAccount] = useState<Account>();
+  const [planName, setPlanName] = useState<string>();
   const [prompt, setPrompt] = useState("Write a haiku about shipping software.");
   const [answer, setAnswer] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const connected = status === "connected";
+  useEffect(() => {
+    fetch("/api/chatgpt/session")
+      .then((r) => r.json())
+      .then((s) => {
+        if (s && s.status === "connected") {
+          setAccount(s.account);
+          setPlanName(s.plan?.name);
+          setPhase("connected");
+        }
+      })
+      .catch(() => {});
+    return () => {
+      if (pollRef.current) clearTimeout(pollRef.current);
+    };
+  }, []);
+
+  function startPolling(deviceAuthId: string, code: string, interval: number) {
+    pollRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/chatgpt/poll", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ deviceAuthId, userCode: code })
+        });
+        const data = await res.json();
+        if (data.status === "complete") {
+          setAccount(data.account);
+          setPlanName(data.plan?.name);
+          setPhase("connected");
+          return;
+        }
+        if (data.error) {
+          setError(data.error);
+          setPhase("idle");
+          return;
+        }
+        startPolling(deviceAuthId, code, interval);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Poll failed");
+        setPhase("idle");
+      }
+    }, interval);
+  }
+
+  async function connect() {
+    setError("");
+    setAnswer("");
+    try {
+      const res = await fetch("/api/chatgpt/device", { method: "POST" });
+      const data = await res.json();
+      if (data.error) {
+        setError(data.error);
+        return;
+      }
+      setUserCode(data.userCode);
+      setVerificationUrl(data.verificationUrl);
+      setPhase("pending");
+      window.open(data.verificationUrl, "_blank", "noopener,noreferrer");
+      startPolling(data.deviceAuthId, data.userCode, data.interval ?? 5000);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to start");
+    }
+  }
+
+  async function logout() {
+    if (pollRef.current) clearTimeout(pollRef.current);
+    await fetch("/api/chatgpt/logout", { method: "POST" }).catch(() => {});
+    setPhase("idle");
+    setAccount(undefined);
+    setPlanName(undefined);
+    setAnswer("");
+  }
 
   async function ask() {
     setLoading(true);
@@ -32,6 +114,10 @@ export function PlaygroundDemo() {
     }
   }
 
+  const connected = phase === "connected";
+  const btn =
+    "inline-flex items-center rounded-lg px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-40";
+
   return (
     <div className="theme-page-shell grid gap-5 rounded-2xl p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -39,12 +125,46 @@ export function PlaygroundDemo() {
           <span className="theme-text-strong text-sm font-semibold">Live demo</span>
           <span className="theme-text-muted text-xs">
             {connected
-              ? `Connected as ${account?.email ?? account?.id ?? "your account"}${plan?.name ? ` · ${plan.name}` : ""}`
+              ? `Connected as ${account?.email ?? account?.id ?? "your account"}${planName ? ` · ${planName}` : ""}`
               : "Not connected"}
           </span>
         </div>
-        <LoginWithChatGPT className="inline-flex items-center rounded-lg bg-(--color-dot-on) px-4 py-2 text-sm font-semibold text-(--color-bg) transition-opacity hover:opacity-90" />
+        {connected ? (
+          <button type="button" onClick={logout} className={`${btn} bg-surface theme-text-strong`}>
+            Disconnect
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={connect}
+            disabled={phase === "pending"}
+            className={`${btn} bg-(--color-dot-on) text-(--color-bg)`}
+          >
+            {phase === "pending" ? "Waiting…" : "Login with ChatGPT"}
+          </button>
+        )}
       </div>
+
+      {phase === "pending" ? (
+        <div className="grid gap-2 rounded-lg bg-(--color-shell) p-4 text-sm theme-text">
+          <p>
+            Enter this code at{" "}
+            <a
+              href={verificationUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="theme-link underline underline-offset-2"
+            >
+              {verificationUrl.replace("https://", "")}
+            </a>
+            :
+          </p>
+          <span className="theme-text-strong font-mono text-2xl tracking-[0.3em]">{userCode}</span>
+          <p className="theme-text-muted text-xs">
+            First time? Enable device code authorization in ChatGPT → Settings → Security &amp; Login.
+          </p>
+        </div>
+      ) : null}
 
       <div className="grid gap-3">
         <textarea
@@ -60,13 +180,11 @@ export function PlaygroundDemo() {
             type="button"
             onClick={ask}
             disabled={!connected || loading || !prompt}
-            className="inline-flex items-center rounded-lg bg-surface px-4 py-2 text-sm font-semibold theme-text-strong transition-opacity hover:opacity-90 disabled:opacity-40"
+            className={`${btn} bg-surface theme-text-strong`}
           >
             {loading ? "Thinking…" : "Run on my subscription"}
           </button>
-          {!connected ? (
-            <span className="theme-text-muted text-xs">Connect first to run a call.</span>
-          ) : null}
+          {!connected ? <span className="theme-text-muted text-xs">Connect first to run a call.</span> : null}
         </div>
 
         {answer ? (

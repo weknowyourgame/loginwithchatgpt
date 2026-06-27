@@ -503,3 +503,15 @@ body[data-playground-route="true"]
     transform: translateY(0) scale(1);
   }
 }
+
+/* Animated dot-matrix "C" site mark */
+@keyframes lwc-c-pulse {
+  0% { opacity: 1; }
+  28%, 100% { opacity: 0.28; }
+}
+.lwc-c-dot {
+  animation: lwc-c-pulse 1.6s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lwc-c-dot { animation: none; opacity: 1; }
+}

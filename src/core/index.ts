@@ -8,7 +8,15 @@ export {
   type LoginOptions,
   type HeadlessLogin,
 } from "./auth";
-export { startDeviceLogin, type DeviceLogin } from "./device";
+export {
+  startDeviceLogin,
+  deviceStart,
+  devicePoll,
+  type DeviceLogin,
+  type DeviceStart,
+  type DevicePollResult,
+} from "./device";
+export { accountInfo } from "./tokens";
 export { createClient } from "./client";
 export {
   fileStore,

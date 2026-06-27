@@ -8,20 +8,19 @@ export const metadata: Metadata = {
   description: "A live Login with ChatGPT demo, running on the loginwithchatgpt SDK itself."
 };
 
-const serverSnippet = `// app/api/chatgpt/[...lwc]/route.ts
-import { createHandlers } from "loginwithchatgpt/next";
+const startSnippet = `// app/api/chatgpt/device/route.ts
+import { deviceStart } from "loginwithchatgpt";
 
 export const runtime = "nodejs";
-export const { GET, POST } = createHandlers();`;
+export async function POST() {
+  return Response.json(await deviceStart());
+}`;
 
-const clientSnippet = `// the demo above, in full
-"use client";
-import { LoginWithChatGPT } from "loginwithchatgpt/react";
+const pollSnippet = `// app/api/chatgpt/poll/route.ts
+import { devicePoll } from "loginwithchatgpt";
 
-const text = await fetch("/api/chat", {
-  method: "POST",
-  body: JSON.stringify({ prompt })
-}).then((r) => r.json());`;
+const result = await devicePoll(deviceAuthId, userCode);
+// "pending" until the user enters the code, then { tokens }`;
 
 export default function PlaygroundPage() {
   return (
@@ -33,21 +32,20 @@ export default function PlaygroundPage() {
             A live demo, on the SDK itself
           </h1>
           <p className="theme-text max-w-[62ch] text-sm leading-relaxed sm:text-base">
-            This page uses <code className="font-mono text-[0.9em]">loginwithchatgpt</code> for real — the
-            button below is the actual component, and &quot;Run&quot; calls an endpoint backed by the
-            engine. Connect your ChatGPT account and the call bills your own subscription.
+            This page uses <code className="font-mono text-[0.9em]">loginwithchatgpt</code> for real. It
+            runs the <strong>device-code flow</strong>, so it works right here in the browser — connect
+            your ChatGPT account and the call bills your own subscription.
           </p>
           <p className="theme-text-muted text-xs leading-relaxed">
-            Note: the loopback login completes when the site runs locally (your machine). On a deployed
-            site you&apos;d use the device-code flow instead.
+            First time? Enable device code authorization in ChatGPT → Settings → Security &amp; Login.
           </p>
         </header>
 
         <PlaygroundDemo />
 
         <div className="grid gap-4">
-          <ManualCodePanel title="the server handler" code={serverSnippet} lang="tsx" />
-          <ManualCodePanel title="the call from the UI" code={clientSnippet} lang="tsx" />
+          <ManualCodePanel title="start the flow" code={startSnippet} lang="tsx" />
+          <ManualCodePanel title="poll for the token" code={pollSnippet} lang="tsx" />
         </div>
       </section>
     </main>
