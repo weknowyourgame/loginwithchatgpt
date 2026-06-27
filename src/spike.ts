@@ -5,7 +5,7 @@ import {
   login,
   logout,
   refresh,
-} from "./core/index.ts";
+} from "./core/index";
 
 const log = (...a: unknown[]) => console.log(...a);
 

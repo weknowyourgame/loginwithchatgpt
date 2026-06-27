@@ -1,6 +1,6 @@
-import { config } from "./config.ts";
-import type { Pkce } from "./pkce.ts";
-import type { Tokens } from "./store.ts";
+import { config } from "./config";
+import type { Pkce } from "./pkce";
+import type { Tokens } from "./store";
 
 /** Build the authorize URL the user's browser opens to consent. */
 export function authorizeUrl(pkce: Pkce): string {

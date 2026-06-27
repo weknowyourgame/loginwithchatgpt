@@ -1,6 +1,6 @@
-import { config } from "./config.ts";
-import { defaultStore, type TokenStore } from "./store.ts";
-import { accountInfo, refreshTokens } from "./tokens.ts";
+import { config } from "./config";
+import { defaultStore, type TokenStore } from "./store";
+import { accountInfo, refreshTokens } from "./tokens";
 
 export interface RespondOptions {
   model?: string;

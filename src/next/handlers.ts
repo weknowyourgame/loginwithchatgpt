@@ -1,4 +1,4 @@
-import { getSession, login, logout, type LoginOptions, type TokenStore } from "../core/index.ts";
+import { getSession, login, logout, type LoginOptions, type TokenStore } from "../core/index";
 
 export interface NextHandlerOptions {
   store?: TokenStore;

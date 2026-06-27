@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import type { Session } from "../core/index.ts";
-import { useChatGPTAuth, type UseChatGPTAuthOptions } from "./useChatGPTAuth.ts";
+import type { Session } from "../core/index";
+import { useChatGPTAuth, type UseChatGPTAuthOptions } from "./useChatGPTAuth";
 
 export interface LoginWithChatGPTProps extends UseChatGPTAuthOptions {
   onConnected?: (session: Pick<Session, "account" | "plan">) => void;

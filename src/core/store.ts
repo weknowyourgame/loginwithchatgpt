@@ -1,7 +1,7 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
-import { decrypt, encrypt } from "./crypto.ts";
+import { decrypt, encrypt } from "./crypto";
 
 /**
  * Tokens as returned by the OAuth token endpoint, plus a computed absolute expiry.

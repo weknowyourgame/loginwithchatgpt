@@ -5,12 +5,12 @@ export {
   refresh,
   type Session,
   type LoginOptions,
-} from "./auth.ts";
-export { createClient } from "./client.ts";
+} from "./auth";
+export { createClient } from "./client";
 export {
   fileStore,
   encryptedFileStore,
   defaultStore,
   type TokenStore,
   type Tokens,
-} from "./store.ts";
+} from "./store";

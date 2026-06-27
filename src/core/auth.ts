@@ -1,8 +1,8 @@
 import { spawn } from "node:child_process";
-import { createPkce } from "./pkce.ts";
-import { waitForCode } from "./loopback.ts";
-import { accountInfo, authorizeUrl, exchangeCode, refreshTokens } from "./tokens.ts";
-import { defaultStore, type TokenStore, type Tokens } from "./store.ts";
+import { createPkce } from "./pkce";
+import { waitForCode } from "./loopback";
+import { accountInfo, authorizeUrl, exchangeCode, refreshTokens } from "./tokens";
+import { defaultStore, type TokenStore, type Tokens } from "./store";
 
 export interface Session {
   account: { email?: string; id?: string };

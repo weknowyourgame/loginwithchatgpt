@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { config } from "./config.ts";
+import { config } from "./config";
 
 const page = (body: string) =>
   `<!doctype html><html><head><meta charset="utf-8"><title>Login with ChatGPT</title>

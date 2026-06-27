@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { Session } from "../core/index.ts";
+import type { Session } from "../core/index";
 
 export type AuthStatus = "idle" | "connecting" | "connected" | "error";
 

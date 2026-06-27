@@ -1,1 +1,1 @@
-export { createHandlers, type NextHandlerOptions } from "./handlers.ts";
+export { createHandlers, type NextHandlerOptions } from "./handlers";
