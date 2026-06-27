@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef } from "react";
 import type { Session } from "../core/index";
 import { useChatGPTAuth, type UseChatGPTAuthOptions } from "./useChatGPTAuth";

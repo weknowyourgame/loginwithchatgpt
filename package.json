@@ -1,13 +1,53 @@
 {
   "name": "loginwithchatgpt",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
+  "description": "Let your users power your app's AI with their own ChatGPT subscription — a drop-in Login with ChatGPT button.",
+  "keywords": [
+    "chatgpt",
+    "openai",
+    "codex",
+    "oauth",
+    "pkce",
+    "authentication",
+    "react",
+    "nextjs",
+    "ai",
+    "local-first"
+  ],
+  "license": "MIT",
+  "author": "Sarthak Kapila",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sarthakkapila/loginwithchatgpt.git"
+  },
+  "homepage": "https://github.com/sarthakkapila/loginwithchatgpt#readme",
+  "bugs": "https://github.com/sarthakkapila/loginwithchatgpt/issues",
   "type": "module",
-  "module": "src/core/index.ts",
+  "sideEffects": false,
+  "main": "./dist/core/index.js",
+  "module": "./dist/core/index.js",
+  "types": "./dist/core/index.d.ts",
   "exports": {
-    ".": "./src/core/index.ts",
-    "./react": "./src/react/index.ts",
-    "./next": "./src/next/index.ts"
+    ".": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js"
+    },
+    "./next": {
+      "types": "./dist/next/index.d.ts",
+      "import": "./dist/next/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
   },
   "peerDependencies": {
     "react": ">=18"
@@ -18,8 +58,12 @@
     }
   },
   "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "tsup",
     "login": "bun run src/spike.ts login",
     "call": "bun run src/spike.ts call",
+    "stream": "bun run src/spike.ts stream",
     "refresh": "bun run src/spike.ts refresh",
     "whoami": "bun run src/spike.ts whoami",
     "logout": "bun run src/spike.ts logout"
@@ -27,6 +71,9 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/react": "^19.2.17",
-    "react": "^19.2.7"
+    "esbuild-plugin-preserve-directives": "^0.0.11",
+    "react": "^19.2.7",
+    "tsup": "^8.5.1",
+    "typescript": "5.7.3"
   }
 }
