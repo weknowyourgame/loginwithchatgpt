@@ -18,10 +18,10 @@
   "author": "Sarthak Kapila",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sarthakkapila/loginwithchatgpt.git"
+    "url": "git+https://github.com/weknowyourgame/loginwithchatgpt.git"
   },
-  "homepage": "https://github.com/sarthakkapila/loginwithchatgpt#readme",
-  "bugs": "https://github.com/sarthakkapila/loginwithchatgpt/issues",
+  "homepage": "https://github.com/weknowyourgame/loginwithchatgpt#readme",
+  "bugs": "https://github.com/weknowyourgame/loginwithchatgpt/issues",
   "type": "module",
   "sideEffects": false,
   "main": "./dist/core/index.js",
