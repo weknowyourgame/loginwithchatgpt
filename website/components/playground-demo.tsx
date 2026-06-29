@@ -120,13 +120,22 @@ export function PlaygroundDemo() {
 
   return (
     <div className="theme-page-shell grid gap-5 rounded-2xl p-6">
+      {!connected && phase === "idle" ? (
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-400">
+          <strong className="font-semibold">Before you connect:</strong> device code login must be
+          enabled in your ChatGPT account. Go to{" "}
+          <strong>ChatGPT → Settings → Security &amp; Login → Allow device code login</strong> and
+          turn it on, then click the button below.
+        </div>
+      ) : null}
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="grid gap-0.5">
           <span className="theme-text-strong text-sm font-semibold">Live demo</span>
           <span className="theme-text-muted text-xs">
             {connected
               ? `Connected as ${account?.email ?? account?.id ?? "your account"}${planName ? ` · ${planName}` : ""}`
-              : "Not connected"}
+              : phase === "pending" ? "Waiting for you to enter the code…" : "Not connected"}
           </span>
         </div>
         {connected ? (
@@ -148,7 +157,7 @@ export function PlaygroundDemo() {
       {phase === "pending" ? (
         <div className="grid gap-2 rounded-lg bg-(--color-shell) p-4 text-sm theme-text">
           <p>
-            Enter this code at{" "}
+            A tab just opened. Enter this code at{" "}
             <a
               href={verificationUrl}
               target="_blank"
@@ -161,7 +170,7 @@ export function PlaygroundDemo() {
           </p>
           <span className="theme-text-strong font-mono text-2xl tracking-[0.3em]">{userCode}</span>
           <p className="theme-text-muted text-xs">
-            First time? Enable device code authorization in ChatGPT → Settings → Security &amp; Login.
+            Didn&apos;t get the tab? Open the link above manually. Code expires in ~5 minutes.
           </p>
         </div>
       ) : null}

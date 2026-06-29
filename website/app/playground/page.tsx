@@ -37,7 +37,9 @@ export default function PlaygroundPage() {
             your ChatGPT account and the call bills your own subscription.
           </p>
           <p className="theme-text-muted text-xs leading-relaxed">
-            First time? Enable device code authorization in ChatGPT → Settings → Security &amp; Login.
+            Requires a ChatGPT Plus or Pro subscription.{" "}
+            <strong className="theme-text">First time?</strong> Enable device code login first:{" "}
+            <strong className="theme-text">ChatGPT → Settings → Security &amp; Login → Allow device code login</strong>.
           </p>
         </header>
 

@@ -8,22 +8,6 @@ export interface RespondOptions {
   signal?: AbortSignal;
 }
 
-interface ResponsesJson {
-  output_text?: string;
-  output?: Array<{ content?: Array<{ text?: string }> }>;
-}
-
-/** Collect assistant text from a non-streaming Responses payload. */
-function extractText(json: ResponsesJson): string {
-  if (typeof json.output_text === "string") return json.output_text;
-  const parts: string[] = [];
-  for (const item of json.output ?? []) {
-    for (const c of item.content ?? []) {
-      if (typeof c.text === "string") parts.push(c.text);
-    }
-  }
-  return parts.length ? parts.join("") : JSON.stringify(json);
-}
 
 /** Yield assistant text deltas from a streaming (SSE) Responses payload. */
 async function* parseSse(res: Response): AsyncGenerator<string> {
@@ -75,7 +59,7 @@ export function createClient(store: TokenStore = defaultStore) {
     return tokens;
   }
 
-  async function send(input: string, stream: boolean, opts: RespondOptions): Promise<Response> {
+  async function send(input: string, opts: RespondOptions): Promise<Response> {
     let tokens = await freshTokens();
     const { accountId } = accountInfo(tokens);
 
@@ -83,7 +67,7 @@ export function createClient(store: TokenStore = defaultStore) {
       model: opts.model ?? config.defaultModel,
       instructions: opts.instructions ?? "You are a helpful assistant.",
       input: [{ role: "user", content: [{ type: "input_text", text: input }] }],
-      stream,
+      stream: true,
       store: false,
     });
 
@@ -113,13 +97,17 @@ export function createClient(store: TokenStore = defaultStore) {
     return res;
   }
 
+  // The API only supports streaming; collect all deltas into a single string.
   async function respond(input: string, opts: RespondOptions = {}): Promise<string> {
-    const res = await send(input, false, opts);
-    return extractText((await res.json()) as ResponsesJson);
+    const parts: string[] = [];
+    for await (const delta of stream(input, opts)) {
+      parts.push(delta);
+    }
+    return parts.join("");
   }
 
   async function* stream(input: string, opts: RespondOptions = {}): AsyncGenerator<string> {
-    const res = await send(input, true, opts);
+    const res = await send(input, opts);
     yield* parseSse(res);
   }
 

@@ -435,16 +435,6 @@ async function startDeviceLogin(opts = {}) {
 }
 
 // src/core/client.ts
-function extractText(json) {
-  if (typeof json.output_text === "string") return json.output_text;
-  const parts = [];
-  for (const item of json.output ?? []) {
-    for (const c of item.content ?? []) {
-      if (typeof c.text === "string") parts.push(c.text);
-    }
-  }
-  return parts.length ? parts.join("") : JSON.stringify(json);
-}
 async function* parseSse(res) {
   const reader = res.body?.getReader();
   if (!reader) return;
@@ -484,14 +474,14 @@ function createClient(store = defaultStore) {
     }
     return tokens;
   }
-  async function send(input, stream2, opts) {
+  async function send(input, opts) {
     let tokens = await freshTokens();
     const { accountId } = accountInfo(tokens);
     const body = JSON.stringify({
       model: opts.model ?? config.defaultModel,
       instructions: opts.instructions ?? "You are a helpful assistant.",
       input: [{ role: "user", content: [{ type: "input_text", text: input }] }],
-      stream: stream2,
+      stream: true,
       store: false
     });
     const post = (accessToken) => fetch(config.responsesUrl, {
@@ -518,11 +508,14 @@ function createClient(store = defaultStore) {
     return res;
   }
   async function respond(input, opts = {}) {
-    const res = await send(input, false, opts);
-    return extractText(await res.json());
+    const parts = [];
+    for await (const delta of stream(input, opts)) {
+      parts.push(delta);
+    }
+    return parts.join("");
   }
   async function* stream(input, opts = {}) {
-    const res = await send(input, true, opts);
+    const res = await send(input, opts);
     yield* parseSse(res);
   }
   return { respond, stream };
