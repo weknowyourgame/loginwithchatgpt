@@ -12,6 +12,14 @@ const coreImport = `import {
   createClient
 } from "loginwithchatgpt";`;
 
+const modelExample = `// default is gpt-5.5; override per call
+const text = await createClient().respond("Refactor this", { model: "gpt-5.4-mini" });
+
+// streaming
+for await (const delta of createClient().stream("Write tests", { model: "gpt-5.4" })) {
+  process.stdout.write(delta);
+}`;
+
 const storeExample = `import { createClient, type TokenStore } from "loginwithchatgpt";
 
 const myStore: TokenStore = { load, save, clear };
@@ -70,6 +78,49 @@ export default function ManualPage() {
             <li>- Device code — shows a short code the user enters on an OpenAI page. Works on web/headless.</li>
             <li>- Headless paste — user copies the code from the redirect URL. Fallback for SSH/containers.</li>
           </ul>
+        </section>
+
+        <section className="grid gap-3">
+          <h2 className="theme-text-strong text-lg tracking-tight">Models</h2>
+          <p className="theme-text max-w-[72ch] text-sm leading-relaxed">
+            These models work with the ChatGPT subscription backend. They are{" "}
+            <strong>not</strong> the same as direct OpenAI API models — they only work when the
+            user is signed in with a ChatGPT Plus or Pro account.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="theme-text w-full text-sm">
+              <thead>
+                <tr className="border-b border-(--color-border)">
+                  <th className="py-2 pr-4 text-left font-medium">Model</th>
+                  <th className="py-2 pr-4 text-left font-medium">Description</th>
+                  <th className="py-2 text-left font-medium">Plan</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-(--color-border)">
+                  <td className="py-2 pr-4 font-mono text-[0.9em]">gpt-5.5</td>
+                  <td className="py-2 pr-4">Newest frontier model. Best for complex coding. <span className="theme-text-muted">(default)</span></td>
+                  <td className="py-2">Plus / Pro</td>
+                </tr>
+                <tr className="border-b border-(--color-border)">
+                  <td className="py-2 pr-4 font-mono text-[0.9em]">gpt-5.4</td>
+                  <td className="py-2 pr-4">Flagship. Strong coding, reasoning, tool use.</td>
+                  <td className="py-2">Plus / Pro</td>
+                </tr>
+                <tr className="border-b border-(--color-border)">
+                  <td className="py-2 pr-4 font-mono text-[0.9em]">gpt-5.4-mini</td>
+                  <td className="py-2 pr-4">Faster, lighter. Good for quick tasks and subagents.</td>
+                  <td className="py-2">Plus / Pro</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-4 font-mono text-[0.9em]">gpt-5.3-codex-spark</td>
+                  <td className="py-2 pr-4">Near-instant coding iteration. Research preview.</td>
+                  <td className="py-2">Pro only</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <ManualCodePanel title="pick a model" code={modelExample} lang="tsx" />
         </section>
 
         <section className="grid gap-3">

@@ -168,6 +168,33 @@ bun run refresh   # force a token refresh
 bun run logout    # clear stored tokens
 ```
 
+## Models
+
+These are the models supported by the ChatGPT subscription backend (`chatgpt.com/backend-api/codex/responses`). These are **different** from the direct OpenAI API models — they only work with a ChatGPT subscription (Plus/Pro), not an API key.
+
+| Model | Description | Plan |
+| --- | --- | --- |
+| `gpt-5.5` | Newest frontier model. Best for complex coding, computer use, and research. **(default)** | Plus / Pro |
+| `gpt-5.4` | Flagship model with strong coding, reasoning, and tool use. | Plus / Pro |
+| `gpt-5.4-mini` | Faster, lighter option for responsive tasks and subagents. | Plus / Pro |
+| `gpt-5.3-codex-spark` | Near-instant real-time coding iteration. Research preview. | Pro only |
+
+Pass a `model` option to override the default:
+
+```ts
+// Core / Next.js
+const text = await createClient().respond("Refactor this", { model: "gpt-5.4-mini" });
+
+// Streaming
+for await (const delta of createClient().stream("Write tests", { model: "gpt-5.4" })) {
+  process.stdout.write(delta);
+}
+```
+
+The `RespondOptions` type exported from the package accepts `model`, `instructions`, and `signal`.
+
+> **Note:** `codex-mini-latest` and other `o4-mini`-based names only work with a direct OpenAI API key — they are not valid for the ChatGPT subscription backend.
+
 ## Status
 
 The auth flow (login, token storage, refresh) is implemented and working. The AI call path

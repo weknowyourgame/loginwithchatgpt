@@ -26,7 +26,7 @@ var config = {
   // The ChatGPT backend that bills the user's subscription.
   responsesUrl: "https://chatgpt.com/backend-api/codex/responses",
   // Codex-scoped: ChatGPT-account tokens only accept Codex models, not general chat models.
-  defaultModel: "gpt-5-codex",
+  defaultModel: "gpt-5.5",
   // Device-code flow (headless / web, no loopback). Requires the user to enable device
   // code authorization in ChatGPT Settings -> Security & Login.
   deviceUserCodeUrl: "https://auth.openai.com/api/accounts/deviceauth/usercode",
