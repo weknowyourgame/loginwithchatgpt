@@ -24,7 +24,11 @@ export async function readTokens(): Promise<Tokens | null> {
 
 export async function writeTokens(tokens: Tokens): Promise<void> {
   const store = await cookies();
-  store.set(TOKEN_COOKIE, Buffer.from(JSON.stringify(tokens)).toString("base64"), cookieOptions);
+  // id_token is a large JWT that duplicates claims already in access_token.
+  // Dropping it keeps the cookie well under the 4 KB browser limit.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { id_token: _drop, ...slim } = tokens as Tokens & { id_token?: string };
+  store.set(TOKEN_COOKIE, Buffer.from(JSON.stringify(slim)).toString("base64"), cookieOptions);
 }
 
 export async function clearTokens(): Promise<void> {
