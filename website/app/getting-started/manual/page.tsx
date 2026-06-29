@@ -12,6 +12,41 @@ const coreImport = `import {
   createClient
 } from "loginwithchatgpt";`;
 
+const loopbackExample = `import { login } from "loginwithchatgpt";
+
+// Opens the browser automatically and waits for the user to approve.
+// Best for desktop apps, Electron, and local CLIs.
+const session = await login({
+  onUrl: (url) => console.log("Open this if the browser doesn't open:", url),
+});
+console.log(session.account.email); // aniki123@gmail.com`;
+
+const deviceExample = `import { startDeviceLogin } from "loginwithchatgpt";
+
+// Shows a short code the user enters on an OpenAI page.
+// Works anywhere — web servers, Next.js, Docker, remote machines.
+// Requires: ChatGPT → Settings → Security & Login → Allow device code login
+const flow = await startDeviceLogin();
+
+console.log("Enter this code at:", flow.verificationUrl);
+console.log("Code:", flow.userCode); // e.g. ABCD-1234
+
+const session = await flow.wait(); // polls until the user enters the code
+console.log(session.account.email);`;
+
+const headlessExample = `import { startLogin } from "loginwithchatgpt";
+
+// Prints a URL for the user to open in any browser, then waits for them
+// to paste the redirect URL (or just the code) back.
+// Fallback for SSH sessions and CI where there's no browser at all.
+const flow = startLogin();
+
+console.log("Open this URL and approve:", flow.url);
+const pasted = await readLine("Paste the redirect URL: "); // your own stdin helper
+
+const session = await flow.complete(pasted); // accepts the full URL or just the code
+console.log(session.account.email);`;
+
 const modelExample = `// default is gpt-5.5; override per call
 const text = await createClient().respond("Refactor this", { model: "gpt-5.4-mini" });
 
@@ -71,13 +106,39 @@ export default function ManualPage() {
           </ul>
         </section>
 
-        <section className="grid gap-3">
+        <section className="grid gap-5">
           <h2 className="theme-text-strong text-lg tracking-tight">Login flows</h2>
-          <ul className="theme-text grid gap-2 text-sm leading-relaxed">
-            <li>- Loopback — auto-captures the redirect on the user&apos;s machine. Best for desktop/CLI.</li>
-            <li>- Device code — shows a short code the user enters on an OpenAI page. Works on web/headless.</li>
-            <li>- Headless paste — user copies the code from the redirect URL. Fallback for SSH/containers.</li>
-          </ul>
+
+          <div className="grid gap-2">
+            <h3 className="theme-text-strong text-sm font-semibold">1. Loopback (desktop / CLI)</h3>
+            <p className="theme-text text-sm leading-relaxed">
+              Auto-opens the browser and catches the redirect on{" "}
+              <code className="font-mono text-[0.9em]">localhost:1455</code>. No user copy-paste needed.
+              Use this for Electron apps, local CLIs, and local-first Next.js dev tools.
+            </p>
+            <ManualCodePanel title="login() — loopback" code={loopbackExample} lang="tsx" />
+          </div>
+
+          <div className="grid gap-2">
+            <h3 className="theme-text-strong text-sm font-semibold">2. Device code (web / Next.js / Docker)</h3>
+            <p className="theme-text text-sm leading-relaxed">
+              Shows a short code the user enters at an OpenAI page. Works on any server or container —
+              no localhost redirect needed. This is what the playground on this site uses.{" "}
+              <strong className="theme-text">Requires enabling device code login:</strong>{" "}
+              ChatGPT → Settings → Security &amp; Login → Allow device code login.
+            </p>
+            <ManualCodePanel title="startDeviceLogin() — device code" code={deviceExample} lang="tsx" />
+          </div>
+
+          <div className="grid gap-2">
+            <h3 className="theme-text-strong text-sm font-semibold">3. Headless paste (SSH / CI)</h3>
+            <p className="theme-text text-sm leading-relaxed">
+              Prints the auth URL for the user to open in any browser on any machine, then waits for
+              them to paste the redirect URL back. Pure fallback — use this when there is no browser
+              at all, e.g. an SSH session or a CI pipeline.
+            </p>
+            <ManualCodePanel title="startLogin() — headless paste" code={headlessExample} lang="tsx" />
+          </div>
         </section>
 
         <section className="grid gap-3">

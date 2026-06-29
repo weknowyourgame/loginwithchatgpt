@@ -153,19 +153,29 @@ bun install
 bun run dev
 ```
 
+## Login flows
+
+There are three ways to authenticate, matching different environments:
+
+| Flow | Function | When to use |
+| --- | --- | --- |
+| **Loopback** | `login()` | Desktop apps, Electron, local CLIs — auto-opens the browser and catches the redirect on `localhost:1455`. Nothing to copy-paste. |
+| **Device code** | `startDeviceLogin()` | Web servers, Next.js, Docker, remote machines — shows a short code the user enters at an OpenAI page. **Requires enabling** ChatGPT → Settings → Security & Login → Allow device code login. |
+| **Headless paste** | `startLogin()` | SSH sessions, CI pipelines — prints a URL for the user to open in any browser, then waits for them to paste the redirect URL back. Pure fallback. |
+
 ## CLI
 
 The repo includes a small CLI that exercises the engine directly:
 
 ```bash
-bun run login     # run the OAuth flow and store tokens
-bun run login --device     # device-code flow (shows a code, works in web/headless)
-bun run login --headless   # paste-the-code flow for SSH/containers/CI
-bun run whoami    # show the connected account and plan
-bun run call      # one AI call billed to the subscription
-bun run stream    # the same call, streamed
-bun run refresh   # force a token refresh
-bun run logout    # clear stored tokens
+bun run login              # loopback flow — auto-opens browser (use this on your Mac)
+bun run login --device     # device-code flow — shows a short code, works anywhere
+bun run login --headless   # headless paste — for SSH/containers/CI with no browser
+bun run whoami             # show the connected account and plan
+bun run call               # one AI call billed to the subscription
+bun run stream             # the same call, streamed
+bun run refresh            # force a token refresh
+bun run logout             # clear stored tokens
 ```
 
 ## Models
