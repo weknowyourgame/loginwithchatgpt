@@ -1,4 +1,9 @@
-# loginwithchatgpt
+---
+**Navigation:** [Introduction](#introduction) | [Quickstart](#quickstart) | [API](#react-api) | [Playground](#playground) | [GitHub](https://github.com/weknowyourgame/loginwithchatgpt) | [npm](https://www.npmjs.com/package/loginwithchatgpt)
+
+---
+
+# loginwithchatgpt {#introduction}
 
 A drop-in "Login with ChatGPT" button that lets your app's users power its AI features with
 their own ChatGPT subscription. The user signs in with their ChatGPT account, and your AI
@@ -26,7 +31,7 @@ bun add loginwithchatgpt
 
 `react` is an optional peer dependency - you only need it if you use the React entry point.
 
-## Quickstart (Next.js, App Router)
+## Quickstart (Next.js, App Router) {#quickstart}
 
 Two files. First, mount the route handlers under a catch-all route:
 
@@ -64,7 +69,7 @@ export async function POST(req: Request) {
 }
 ```
 
-## React API
+## React API {#react-api}
 
 ```ts
 import { LoginWithChatGPT, useChatGPTAuth } from "loginwithchatgpt/react";
@@ -218,9 +223,9 @@ updating if OpenAI rotates it; it is isolated in a single file.
 
 Multiple working examples for different environments and frameworks:
 
-### Official Examples
+### Official Examples {#playground}
 
-- **[examples/web](./examples/web)** - Next.js App Router example (official)
+- **[examples/web](./examples/web)** - Next.js App Router example with interactive playground (official)
 
 ### QA Testing Examples
 
