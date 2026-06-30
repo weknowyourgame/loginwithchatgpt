@@ -302,8 +302,8 @@ Strict mode: ✅ PASSES
 ### Deliverables
 1. ✅ SDK_REVIEW.md - Comprehensive 500+ line report
 2. ✅ QA_BRAIN.md - This thinking document
-3. ✅ examples-qa/ - 9 working examples with tests
-4. ✅ examples-qa/*/README.md - Expected behavior docs for each
+3. ✅ examples/qa/ - 9 working examples with tests
+4. ✅ examples/qa/*/README.md - Expected behavior docs for each
 
 ### Report Sections
 - Executive summary

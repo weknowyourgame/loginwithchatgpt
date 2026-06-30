@@ -52,57 +52,57 @@
 
 ---
 
-## 🧪 Working Examples (examples-qa/)
+## 🧪 Working Examples (examples/qa/)
 
 All examples are complete, working code ready to run.
 
 ### Authentication Flows
 
-**1. CLI Example** (`examples-qa/cli/`)
+**1. CLI Example** (`examples/qa/cli/`)
 - Tests: `login()`, `getSession()`, `logout()`, `refresh()`, `createClient()`
 - Use case: Command-line applications
 - Run: `npm run login`, `npm run whoami`, `npm run chat "prompt"`
 
-**2. Device Code Flow** (`examples-qa/device-code/`)
+**2. Device Code Flow** (`examples/qa/device-code/`)
 - Tests: `startDeviceLogin()`, polling, timeout
 - Use case: Web servers, headless environments
 - Run: `npm run start` then enter code at verification URL
 
-**3. Headless Login** (`examples-qa/headless-login/`)
+**3. Headless Login** (`examples/qa/headless-login/`)
 - Tests: `startLogin()`, manual PKCE flow
 - Use case: SSH, CI/CD, remote development
 - Run: `npm run start`, paste redirect URL manually
 
 ### Framework Integration
 
-**4. React + Vite** (`examples-qa/react-vite/`)
+**4. React + Vite** (`examples/qa/react-vite/`)
 - Tests: `useChatGPTAuth()` hook, `<LoginWithChatGPT/>` component
 - Features: Error boundaries, loading states, session persistence
 - Run: `npm run dev` → visit http://localhost:5173
 
-**5. Express Server** (`examples-qa/express/`)
+**5. Express Server** (`examples/qa/express/`)
 - Tests: Server-side auth, custom TokenStore, concurrent requests
 - Features: /status, /login, /whoami endpoints
 - Run: `npm run dev` → test with curl
 
-**6. Fastify Server** (`examples-qa/fastify/`)
+**6. Fastify Server** (`examples/qa/fastify/`)
 - Tests: Async routes, high-performance server
 - Features: Same endpoints as Express
 - Run: `npm run dev`
 
 ### Type Safety & Edge Cases
 
-**7. TypeScript Strict** (`examples-qa/typescript-strict/`)
+**7. TypeScript Strict** (`examples/qa/typescript-strict/`)
 - Tests: All types, strict mode validation
 - Features: Type inference, error handling
 - Run: `npm run type-check` (compilation test)
 
-**8. Minimal Example** (`examples-qa/minimal/`)
+**8. Minimal Example** (`examples/qa/minimal/`)
 - Tests: 20-line quickstart
 - Features: Bare minimum auth + API call
 - Run: `node index.js login`, then `node index.js`
 
-**9. Error Scenarios** (`examples-qa/error-scenarios/`)
+**9. Error Scenarios** (`examples/qa/error-scenarios/`)
 - Tests: Port binding, corruption, timeout, CSRF
 - Features: Edge case testing
 - Run: `npm run test-port`, `npm run test-corruption`, etc.
@@ -180,7 +180,7 @@ Maintainability:          8.5/10 (clean code)
 1. Pick an issue from `SDK_REVIEW.md`
 2. Run the relevant example
 3. Implement the fix
-4. Add tests to examples-qa/
+4. Add tests to examples/qa/
 5. Submit PR with working example
 
 ### For Testing Team
@@ -231,9 +231,9 @@ Maintainability:          8.5/10 (clean code)
 
 ### To Run the Examples
 ```bash
-cd examples-qa/cli && npm install && npm run login
-cd examples-qa/react-vite && npm install && npm run dev
-cd examples-qa/express && npm install && npm run dev
+cd examples/qa/cli && npm install && npm run login
+cd examples/qa/react-vite && npm install && npm run dev
+cd examples/qa/express && npm install && npm run dev
 # ... etc for each example
 ```
 
@@ -253,7 +253,7 @@ Refer to the comprehensive reports:
 - **General overview?** → QA_SUMMARY.md
 - **Technical details?** → SDK_REVIEW.md
 - **How was this done?** → QA_BRAIN.md
-- **See it working?** → examples-qa/*/README.md
+- **See it working?** → examples/qa/*/README.md
 - **Where's the bug?** → SDK_REVIEW.md (Issues section)
 
 ---

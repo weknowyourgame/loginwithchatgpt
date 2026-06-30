@@ -40,21 +40,21 @@ Each example includes:
 **Examples by category**:
 
 **Core Authentication**:
-- `examples-qa/cli/` - Full CLI lifecycle (login, whoami, chat, refresh, logout)
-- `examples-qa/minimal/` - 20-line quickstart
-- `examples-qa/typescript-strict/` - TypeScript strict mode validation
+- `examples/qa/cli/` - Full CLI lifecycle (login, whoami, chat, refresh, logout)
+- `examples/qa/minimal/` - 20-line quickstart
+- `examples/qa/typescript-strict/` - TypeScript strict mode validation
 
 **Authentication Flows**:
-- `examples-qa/device-code/` - Device code flow testing
-- `examples-qa/headless-login/` - Manual PKCE for SSH/CI
+- `examples/qa/device-code/` - Device code flow testing
+- `examples/qa/headless-login/` - Manual PKCE for SSH/CI
 
 **Framework Integration**:
-- `examples-qa/react-vite/` - React hook and component
-- `examples-qa/express/` - Express.js server
-- `examples-qa/fastify/` - Fastify async routes
+- `examples/qa/react-vite/` - React hook and component
+- `examples/qa/express/` - Express.js server
+- `examples/qa/fastify/` - Fastify async routes
 
 **Error Handling**:
-- `examples-qa/error-scenarios/` - Port binding, corruption, timeout
+- `examples/qa/error-scenarios/` - Port binding, corruption, timeout
 
 ### 3. Security Analysis ✅
 
@@ -218,7 +218,7 @@ Tested 15+ scenarios:
 - Lessons learned
 - Complete analysis trail
 
-### 3. examples-qa/ (Working Examples)
+### 3. examples/qa/ (Working Examples)
 - 9 comprehensive examples
 - Each with working code
 - Detailed READMEs
@@ -240,7 +240,7 @@ Tested 15+ scenarios:
 ### For SDK Maintainers
 1. Read **SDK_REVIEW.md** - Start here for full assessment
 2. Review **QA_BRAIN.md** - Detailed analysis and reasoning
-3. Run **examples-qa/*** - See actual working code testing each feature
+3. Run **examples/qa/*** - See actual working code testing each feature
 4. Use recommendations - Prioritized roadmap to v1.0
 
 ### For Early Adopters
@@ -250,7 +250,7 @@ Tested 15+ scenarios:
 4. File bugs if you hit any issues
 
 ### For Documentation Team
-1. Review **examples-qa/*/README.md** - Template for good docs
+1. Review **examples/qa/*/README.md** - Template for good docs
 2. Note gaps in current documentation
 3. Create troubleshooting guide based on error scenarios
 4. Add security considerations section
@@ -337,7 +337,7 @@ Tested 15+ scenarios:
 5. Engage with early adopters for feedback
 
 ### For Users
-1. Review examples-qa/ for your use case
+1. Review examples/qa/ for your use case
 2. Read SDK_REVIEW.md "Critical Issues" section
 3. Understand current limitations
 4. Test thoroughly before production
@@ -346,7 +346,7 @@ Tested 15+ scenarios:
 ### For Contributors
 1. Pick issues from "Nice to Have" list
 2. Run examples locally first
-3. Add tests to examples-qa/ for your fix
+3. Add tests to examples/qa/ for your fix
 4. Submit PR with example demonstration
 
 ---

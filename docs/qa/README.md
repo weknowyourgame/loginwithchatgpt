@@ -15,7 +15,7 @@
 
 ## 🧪 Examples
 
-Nine comprehensive working examples in `examples/`:
+Nine comprehensive working examples in `examples/qa/`:
 
 | Example | Tests | Run |
 |---------|-------|-----|
@@ -114,8 +114,11 @@ docs/qa/
 ├── QA_INDEX.md (master navigation guide)
 ├── QA_SUMMARY.md (executive summary)
 ├── SDK_REVIEW.md (technical deep-dive, 500+ lines)
-├── QA_BRAIN.md (complete analysis, 6000+ lines)
-└── examples/
+└── QA_BRAIN.md (complete analysis, 6000+ lines)
+
+examples/
+├── web/                 (original Next.js example)
+└── qa/                  (QA testing examples)
     ├── cli/
     ├── react-vite/
     ├── express/
@@ -142,7 +145,7 @@ cat docs/qa/QA_SUMMARY.md
 cat docs/qa/SDK_REVIEW.md
 
 # Run an example
-cd docs/qa/examples/cli
+cd examples/qa/cli
 npm install
 npm run login
 
