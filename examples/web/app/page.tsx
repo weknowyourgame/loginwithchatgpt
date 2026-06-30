@@ -14,12 +14,12 @@ const button: React.CSSProperties = {
 };
 
 const navLink: React.CSSProperties = {
-  color: "#a1a1aa",
+  color: "#fafafa",
   textDecoration: "none",
   fontSize: 14,
   cursor: "pointer",
-  marginRight: 20,
   transition: "color 0.2s",
+  fontWeight: 500,
 };
 
 export default function Home() {
