@@ -60,10 +60,10 @@ export default function HomePage() {
     <main className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
       {/* Navigation Header */}
       <nav className="flex items-center justify-between border-b border-(--color-border) py-4 mb-8">
-        <p className="theme-text-muted font-mono text-xs">loginwithchatgpt</p>
         <div className="flex gap-6 theme-text-muted text-sm">
           <a href="#getting-started" className="hover:theme-text-strong transition">Getting Started</a>
           <a href="#how-it-works" className="hover:theme-text-strong transition">How it Works</a>
+          <a href="https://loginwithchatgpt.sarthak.cool/playground" target="_blank" rel="noopener noreferrer" className="hover:theme-text-strong transition">Playground</a>
           <a href="https://github.com/weknowyourgame/loginwithchatgpt" target="_blank" rel="noopener noreferrer" className="hover:theme-text-strong transition">GitHub</a>
           <a href="https://www.npmjs.com/package/loginwithchatgpt" target="_blank" rel="noopener noreferrer" className="hover:theme-text-strong transition">npm</a>
         </div>
