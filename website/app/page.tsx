@@ -58,8 +58,19 @@ const features = [
 export default function HomePage() {
   return (
     <main className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
+      {/* Navigation Header */}
+      <nav className="flex items-center justify-between border-b border-(--color-border) py-4 mb-8">
+        <p className="theme-text-muted font-mono text-xs">loginwithchatgpt</p>
+        <div className="flex gap-6 theme-text-muted text-sm">
+          <a href="#getting-started" className="hover:theme-text-strong transition">Getting Started</a>
+          <a href="#how-it-works" className="hover:theme-text-strong transition">How it Works</a>
+          <a href="https://github.com/weknowyourgame/loginwithchatgpt" target="_blank" rel="noopener noreferrer" className="hover:theme-text-strong transition">GitHub</a>
+          <a href="https://www.npmjs.com/package/loginwithchatgpt" target="_blank" rel="noopener noreferrer" className="hover:theme-text-strong transition">npm</a>
+        </div>
+      </nav>
+
       {/* Hero */}
-      <section className="grid gap-8 pt-28 pb-16 sm:pt-32 sm:pb-24">
+      <section className="grid gap-8 pt-20 pb-16 sm:pt-24 sm:pb-24">
         <div className="grid gap-5">
           <p className="theme-text-muted font-mono text-xs uppercase tracking-[0.25em]">
             open source · MIT · bring your own subscription
@@ -96,7 +107,7 @@ export default function HomePage() {
       </section>
 
       {/* The one line */}
-      <section className="grid gap-6 border-t border-(--color-border) py-16 sm:py-20">
+      <section id="getting-started" className="grid gap-6 border-t border-(--color-border) py-16 sm:py-20">
         <div className="grid gap-2">
           <h2 className="theme-text-strong text-2xl tracking-tight sm:text-3xl">One line in your UI</h2>
           <p className="theme-text max-w-[58ch] text-sm leading-relaxed sm:text-base">
@@ -111,7 +122,7 @@ export default function HomePage() {
       </section>
 
       {/* How it works */}
-      <section className="grid gap-8 border-t border-(--color-border) py-16 sm:py-20">
+      <section id="how-it-works" className="grid gap-8 border-t border-(--color-border) py-16 sm:py-20">
         <h2 className="theme-text-strong text-2xl tracking-tight sm:text-3xl">How it works</h2>
         <div className="grid gap-6 sm:grid-cols-3">
           {steps.map((step) => (
