@@ -2,6 +2,8 @@ import { config } from "./config";
 import { defaultStore, type TokenStore } from "./store";
 import { accountInfo, refreshTokens } from "./tokens";
 
+const NETWORK_TIMEOUT = 30000; // 30 seconds
+
 export interface RespondOptions {
   model?: string;
   instructions?: string;
@@ -49,12 +51,29 @@ async function* parseSse(res: Response): AsyncGenerator<string> {
  * isolated here as the most likely thing to need adjustment.
  */
 export function createClient(store: TokenStore = defaultStore) {
+  let refreshInProgress: Promise<void> | null = null;
+
   async function freshTokens() {
     let tokens = await store.load();
     if (!tokens) throw new Error("Not authenticated.");
     if (Date.now() >= tokens.expires_at) {
-      tokens = await refreshTokens(tokens.refresh_token);
-      await store.save(tokens);
+      if (refreshInProgress) {
+        await refreshInProgress;
+        tokens = await store.load();
+        if (!tokens) throw new Error("Not authenticated after refresh.");
+      } else {
+        refreshInProgress = (async () => {
+          try {
+            const newTokens = await refreshTokens(tokens.refresh_token);
+            await store.save(newTokens);
+          } finally {
+            refreshInProgress = null;
+          }
+        })();
+        await refreshInProgress;
+        tokens = await store.load();
+        if (!tokens) throw new Error("Not authenticated after refresh.");
+      }
     }
     return tokens;
   }
@@ -71,10 +90,21 @@ export function createClient(store: TokenStore = defaultStore) {
       store: false,
     });
 
-    const post = (accessToken: string) =>
-      fetch(config.responsesUrl, {
+    const post = (accessToken: string) => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), NETWORK_TIMEOUT);
+      const abortSignal = opts.signal;
+
+      const abortController = new AbortController();
+      const cleanup = () => clearTimeout(timeoutId);
+
+      if (abortSignal) {
+        abortSignal.addEventListener("abort", () => abortController.abort());
+      }
+
+      return fetch(config.responsesUrl, {
         method: "POST",
-        signal: opts.signal,
+        signal: abortController.signal,
         headers: {
           authorization: `Bearer ${accessToken}`,
           "content-type": "application/json",
@@ -83,12 +113,40 @@ export function createClient(store: TokenStore = defaultStore) {
           originator: "codex_cli_rs",
         },
         body,
-      });
+      }).then(
+        (res) => {
+          cleanup();
+          return res;
+        },
+        (err) => {
+          cleanup();
+          if (err.name === "AbortError" && !abortSignal?.aborted) {
+            throw new Error(`Request timed out after ${NETWORK_TIMEOUT}ms`);
+          }
+          throw err;
+        },
+      );
+    };
 
     let res = await post(tokens.access_token);
     if (res.status === 401) {
-      tokens = await refreshTokens(tokens.refresh_token);
-      await store.save(tokens);
+      if (refreshInProgress) {
+        await refreshInProgress;
+        tokens = await store.load();
+        if (!tokens) throw new Error("Not authenticated after refresh.");
+      } else {
+        refreshInProgress = (async () => {
+          try {
+            const newTokens = await refreshTokens(tokens.refresh_token);
+            await store.save(newTokens);
+          } finally {
+            refreshInProgress = null;
+          }
+        })();
+        await refreshInProgress;
+        tokens = await store.load();
+        if (!tokens) throw new Error("Not authenticated after refresh.");
+      }
       res = await post(tokens.access_token);
     }
     if (!res.ok) {

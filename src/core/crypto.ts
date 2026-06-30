@@ -45,10 +45,28 @@ async function fileSet(key: Buffer): Promise<void> {
 }
 
 let cached: Buffer | null = null;
+let cacheTimeout: NodeJS.Timeout | null = null;
+const CACHE_TTL = 5 * 60 * 1000; // Clear cache after 5 minutes of inactivity
+
+function clearCache() {
+  cached = null;
+  if (cacheTimeout) {
+    clearTimeout(cacheTimeout);
+    cacheTimeout = null;
+  }
+}
+
+function resetCacheTimeout() {
+  if (cacheTimeout) clearTimeout(cacheTimeout);
+  cacheTimeout = setTimeout(() => clearCache(), CACHE_TTL);
+}
 
 /** Load the encryption key, generating and persisting one on first use. */
 async function getKey(): Promise<Buffer> {
-  if (cached) return cached;
+  if (cached) {
+    resetCacheTimeout();
+    return cached;
+  }
   const darwin = process.platform === "darwin";
 
   let key = darwin ? await keychainGet() : await fileGet();
@@ -58,6 +76,7 @@ async function getKey(): Promise<Buffer> {
     if (!stored) await fileSet(key); // fallback for non-darwin or keychain failure
   }
   cached = key;
+  resetCacheTimeout();
   return key;
 }
 

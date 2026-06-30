@@ -9,6 +9,27 @@ const headers = {
   "user-agent": "loginwithchatgpt",
 };
 
+const NETWORK_TIMEOUT = 30000; // 30 seconds
+
+function fetchWithTimeout(url: string, options: RequestInit & { timeout?: number } = {}) {
+  const { timeout = NETWORK_TIMEOUT, ...fetchOptions } = options;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  return fetch(url, { ...fetchOptions, signal: controller.signal })
+    .then((res) => {
+      clearTimeout(timeoutId);
+      return res;
+    })
+    .catch((err) => {
+      clearTimeout(timeoutId);
+      if (err.name === "AbortError") {
+        throw new Error(`Request timed out after ${timeout}ms`);
+      }
+      throw err;
+    });
+}
+
 interface UserCodeResponse {
   device_auth_id: string;
   user_code?: string;
@@ -47,7 +68,7 @@ export type DevicePollResult =
  * wait(). Returns the code to show plus the ids to poll with from a separate request.
  */
 export async function deviceStart(): Promise<DeviceStart> {
-  const res = await fetch(config.deviceUserCodeUrl, {
+  const res = await fetchWithTimeout(config.deviceUserCodeUrl, {
     method: "POST",
     headers,
     body: JSON.stringify({ client_id: config.clientId }),
@@ -66,7 +87,7 @@ export async function deviceStart(): Promise<DeviceStart> {
 
 /** Poll once. Pending until the user authorizes, then returns the exchanged tokens. */
 export async function devicePoll(deviceAuthId: string, userCode: string): Promise<DevicePollResult> {
-  const poll = await fetch(config.devicePollUrl, {
+  const poll = await fetchWithTimeout(config.devicePollUrl, {
     method: "POST",
     headers,
     body: JSON.stringify({ device_auth_id: deviceAuthId, user_code: userCode }),
@@ -94,7 +115,7 @@ export async function devicePoll(deviceAuthId: string, userCode: string): Promis
 export async function startDeviceLogin(opts: { store?: TokenStore } = {}): Promise<DeviceLogin> {
   const store = opts.store ?? defaultStore;
 
-  const res = await fetch(config.deviceUserCodeUrl, {
+  const res = await fetchWithTimeout(config.deviceUserCodeUrl, {
     method: "POST",
     headers,
     body: JSON.stringify({ client_id: config.clientId }),
@@ -113,15 +134,19 @@ export async function startDeviceLogin(opts: { store?: TokenStore } = {}): Promi
     verificationUrl: config.deviceVerificationUrl,
     async wait(): Promise<Session> {
       const deadline = Date.now() + 15 * 60_000;
+      let currentInterval = Math.max(interval, 1000);
+      const maxInterval = Math.min(interval * 8, 30000);
+
       while (Date.now() < deadline) {
-        const poll = await fetch(config.devicePollUrl, {
+        const poll = await fetchWithTimeout(config.devicePollUrl, {
           method: "POST",
           headers,
           body: JSON.stringify({ device_auth_id: deviceAuthId, user_code: userCode }),
         });
 
         if (poll.status === 403 || poll.status === 404) {
-          await new Promise((r) => setTimeout(r, interval));
+          await new Promise((r) => setTimeout(r, currentInterval));
+          currentInterval = Math.min(currentInterval * 1.5, maxInterval);
           continue;
         }
         if (!poll.ok) {

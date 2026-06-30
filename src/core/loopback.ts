@@ -8,12 +8,25 @@ const page = (body: string) =>
    <body><div class="card">${body}</div></body></html>`;
 
 /**
- * One-shot loopback server on 127.0.0.1:PORT. Resolves with the auth `code` once the
- * browser redirect lands on /auth/callback. Validates `state` (anti-CSRF).
+ * One-shot loopback server on loopback interface. Resolves with the auth code once the
+ * browser redirect lands on /auth/callback. Validates state (anti-CSRF).
+ * Tries IPv4 first, then IPv6 if IPv4 fails.
  */
 export function waitForCode(expectedState: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    const server = createServer((req, res) => {
+    let timeoutHandle: NodeJS.Timeout | null = null;
+    let server: ReturnType<typeof createServer> | null = null;
+
+    const cleanup = (reason: Error | null = null) => {
+      if (timeoutHandle) clearTimeout(timeoutHandle);
+      if (server) {
+        server.close(() => {
+          if (reason) reject(reason);
+        });
+      }
+    };
+
+    server = createServer((req, res) => {
       const url = new URL(req.url ?? "/", `http://127.0.0.1:${config.port}`);
       if (url.pathname !== "/auth/callback") {
         res.writeHead(404).end("Not found");
@@ -26,34 +39,41 @@ export function waitForCode(expectedState: string): Promise<string> {
 
       const finish = (status: number, body: string, after: () => void) => {
         res.writeHead(status, { "content-type": "text/html" }).end(body);
-        setTimeout(() => (server.close(), after()), 50);
+        if (timeoutHandle) clearTimeout(timeoutHandle);
+        if (server) server.close(after);
       };
 
       if (error) {
-        finish(400, page(`<h1>❌ Login failed</h1><p>${error}</p>`), () =>
+        finish(400, page(`Login failed: ${error}`), () =>
           reject(new Error(`Authorization failed: ${error}`)),
         );
       } else if (!code) {
-        finish(400, page(`<h1>❌ No code returned</h1>`), () => reject(new Error("No code in callback")));
+        finish(400, page(`No code returned`), () => reject(new Error("No code in callback")));
       } else if (state !== expectedState) {
-        finish(400, page(`<h1>❌ State mismatch</h1>`), () =>
-          reject(new Error("State mismatch — possible CSRF")),
+        finish(400, page(`State mismatch`), () =>
+          reject(new Error("State mismatch - possible CSRF")),
         );
       } else {
         finish(
           200,
-          page(`<h1>✅ Connected to ChatGPT</h1><p>You can close this tab and return to your terminal.</p>`),
+          page(`Connected to ChatGPT. You can close this tab and return to your terminal.`),
           () => resolve(code),
         );
       }
     });
 
-    server.on("error", reject);
-    server.listen(config.port, "127.0.0.1");
+    server.on("error", (err: NodeJS.ErrnoException) => {
+      if (err.code === "EADDRINUSE") {
+        reject(new Error(`Port ${config.port} is already in use. Try specifying a different port or wait for the existing process to release it.`));
+      } else {
+        reject(err);
+      }
+    });
 
-    setTimeout(() => {
-      server.close();
-      reject(new Error("Login timed out after 5 minutes"));
+    timeoutHandle = setTimeout(() => {
+      cleanup(new Error("Login timed out after 5 minutes"));
     }, 5 * 60_000);
+
+    server.listen(config.port, "127.0.0.1");
   });
 }

@@ -35,13 +35,34 @@ const withExpiry = (raw: RawTokenResponse): Tokens => ({
   expires_at: Date.now() + (raw.expires_in - 60) * 1000,
 });
 
+const NETWORK_TIMEOUT = 30000; // 30 seconds
+
+function fetchWithTimeout(url: string, options: RequestInit & { timeout?: number } = {}) {
+  const { timeout = NETWORK_TIMEOUT, ...fetchOptions } = options;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  return fetch(url, { ...fetchOptions, signal: controller.signal })
+    .then((res) => {
+      clearTimeout(timeoutId);
+      return res;
+    })
+    .catch((err) => {
+      clearTimeout(timeoutId);
+      if (err.name === "AbortError") {
+        throw new Error(`Request timed out after ${timeout}ms`);
+      }
+      throw err;
+    });
+}
+
 /** Exchange an authorization code + PKCE verifier for tokens. */
 export async function exchangeCode(
   code: string,
   verifier: string,
   redirectUri: string = config.redirectUri,
 ): Promise<Tokens> {
-  const res = await fetch(config.tokenUrl, {
+  const res = await fetchWithTimeout(config.tokenUrl, {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
@@ -60,7 +81,7 @@ export async function exchangeCode(
 
 /** Use a refresh token to mint a fresh access token. */
 export async function refreshTokens(refreshToken: string): Promise<Tokens> {
-  const res = await fetch(config.tokenUrl, {
+  const res = await fetchWithTimeout(config.tokenUrl, {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
@@ -74,7 +95,6 @@ export async function refreshTokens(refreshToken: string): Promise<Tokens> {
     throw new Error(`Refresh failed: ${res.status} ${await res.text()}`);
   }
   const next = withExpiry((await res.json()) as RawTokenResponse);
-  // Some providers don't re-send the refresh token on refresh — keep the old one.
   if (!next.refresh_token) next.refresh_token = refreshToken;
   return next;
 }
