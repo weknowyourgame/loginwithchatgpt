@@ -1,6 +1,6 @@
 {
   "name": "loginwithchatgpt",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Let your users power your app's AI with their own ChatGPT subscription — a drop-in Login with ChatGPT button.",
   "keywords": [
     "chatgpt",
