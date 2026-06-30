@@ -44,35 +44,52 @@ export default function Home() {
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", background: "#0a0a0a" }}>
       <header style={{ borderBottom: "1px solid #1a1a1a", padding: "16px 24px" }}>
-        <div style={{ maxWidth: 640, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>Login with ChatGPT</h2>
-          <nav style={{ display: "flex" }}>
-            <a href="https://github.com/weknowyourgame/loginwithchatgpt" target="_blank" rel="noopener noreferrer" style={navLink}>
-              GitHub
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>loginwithchatgpt</h2>
+          <nav style={{ display: "flex", gap: 30 }}>
+            <a href="#introduction" style={navLink}>
+              Introduction
             </a>
-            <a href="https://github.com/weknowyourgame/loginwithchatgpt/tree/master/docs/qa" target="_blank" rel="noopener noreferrer" style={navLink}>
-              Docs
+            <a href="#quickstart" style={navLink}>
+              Quickstart
+            </a>
+            <a href="https://github.com/weknowyourgame/loginwithchatgpt#react-api" target="_blank" rel="noopener noreferrer" style={navLink}>
+              API
             </a>
             <a href="#playground" style={navLink}>
               Playground
+            </a>
+            <a href="https://github.com/weknowyourgame/loginwithchatgpt" target="_blank" rel="noopener noreferrer" style={navLink}>
+              GitHub
+            </a>
+            <a href="https://www.npmjs.com/package/loginwithchatgpt" target="_blank" rel="noopener noreferrer" style={navLink}>
+              npm
             </a>
           </nav>
         </div>
       </header>
 
-      <main style={{ flex: 1, maxWidth: 640, margin: "0 auto", width: "100%", padding: "80px 24px 40px", display: "grid", gap: 24 }}>
-        <div>
-          <h1 style={{ fontSize: 32, margin: 0 }}>Login with ChatGPT</h1>
-          <p style={{ color: "#a1a1aa", lineHeight: 1.6 }}>
-            Your users power this app's AI with their own ChatGPT subscription. No API key, no usage bill for you.
-          </p>
-        </div>
+      <main style={{ flex: 1, maxWidth: 1200, margin: "0 auto", width: "100%", padding: "80px 24px 40px", display: "grid", gap: 48 }}>
+        <section id="introduction" style={{ display: "grid", gap: 16 }}>
+          <div>
+            <h1 style={{ fontSize: 36, margin: 0, marginBottom: 16 }}>Login with ChatGPT</h1>
+            <p style={{ color: "#a1a1aa", lineHeight: 1.8, fontSize: 16, margin: 0 }}>
+              A drop-in authentication SDK that lets your users sign in with their own ChatGPT account and use their Plus/Pro subscription to power your app's AI features. No API key, no usage bill for you.
+            </p>
+          </div>
+        </section>
 
-        <LoginWithChatGPT onConnected={() => setConnected(true)} className="lwc-btn" />
+        <section id="quickstart" style={{ display: "grid", gap: 16 }}>
+          <h2 style={{ fontSize: 24, margin: 0 }}>Quick Start</h2>
+          <LoginWithChatGPT onConnected={() => setConnected(true)} className="lwc-btn" />
+          <p style={{ color: "#a1a1aa", fontSize: 14, margin: 0 }}>
+            Click above to sign in with your ChatGPT account. After connecting, use the playground below to test an AI call.
+          </p>
+        </section>
 
         {connected && (
-          <section id="playground" style={{ display: "grid", gap: 12, marginTop: 16 }}>
-            <h3 style={{ margin: 0, fontSize: 18 }}>Playground</h3>
+          <section id="playground" style={{ display: "grid", gap: 12 }}>
+            <h2 style={{ fontSize: 24, margin: 0 }}>Playground</h2>
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
