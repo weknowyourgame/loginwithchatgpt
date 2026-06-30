@@ -1,0 +1,13 @@
+{
+  "name": "device-code-example",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test-concurrent": "node test-concurrent.js"
+  },
+  "dependencies": {
+    "loginwithchatgpt": "../../dist"
+  }
+}

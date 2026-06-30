@@ -1,0 +1,18 @@
+{
+  "name": "cli-example",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "login": "node index.js login",
+    "whoami": "node index.js whoami",
+    "chat": "node index.js chat",
+    "refresh": "node index.js refresh",
+    "logout": "node index.js logout",
+    "test:port": "node index.js test-port",
+    "test:corruption": "node index.js test-corruption"
+  },
+  "dependencies": {
+    "loginwithchatgpt": "../../dist"
+  }
+}

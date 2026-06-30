@@ -1,0 +1,17 @@
+{
+  "name": "typescript-strict-example",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "loginwithchatgpt": "../../dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
