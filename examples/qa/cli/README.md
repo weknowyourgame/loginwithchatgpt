@@ -4,27 +4,27 @@ Tests all core APIs in a Node.js CLI environment with real error scenarios.
 
 ## What This Tests
 
-- ✓ `login()` - loopback OAuth flow
-- ✓ `getSession()` - session restore
-- ✓ `refresh()` - token refresh
-- ✓ `logout()` - token cleanup
-- ✓ `createClient()` - API calls with auto-refresh
-- ✓ Error handling for expired tokens
-- ✓ Session persistence across runs
-- ✓ Browser open on all platforms
-- ✓ Port binding errors
-- ✓ Network failures during auth
+- `login()` - loopback OAuth flow
+- `getSession()` - session restore
+- `refresh()` - token refresh
+- `logout()` - token cleanup
+- `createClient()` - API calls with auto-refresh
+- Error handling for expired tokens
+- Session persistence across runs
+- Browser open on all platforms
+- Port binding errors
+- Network failures during auth
 
 ## How to Run
 
 ```bash
 cd examples-qa/cli
 npm install
-npm run login           # Start authentication
-npm run whoami          # Check current session
-npm run chat "prompt"   # Call ChatGPT
-npm run refresh         # Force token refresh
-npm run logout          # Clear stored tokens
+npm run login # Start authentication
+npm run whoami # Check current session
+npm run chat "prompt" # Call ChatGPT
+npm run refresh # Force token refresh
+npm run logout # Clear stored tokens
 ```
 
 ## Expected Behavior

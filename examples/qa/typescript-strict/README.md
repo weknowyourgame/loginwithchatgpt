@@ -4,23 +4,23 @@ Tests type safety and TypeScript strictness.
 
 ## What This Tests
 
-- ✓ TypeScript strict mode: true
-- ✓ All exported types
-- ✓ Generic types for TokenStore
-- ✓ Discriminated unions (AuthStatus)
-- ✓ Optional properties
-- ✓ Error handling types
-- ✓ Async/await types
-- ✓ No `any` usage
+- TypeScript strict mode: true
+- All exported types
+- Generic types for TokenStore
+- Discriminated unions (AuthStatus)
+- Optional properties
+- Error handling types
+- Async/await types
+- No `any` usage
 
 ## How to Run
 
 ```bash
 cd examples-qa/typescript-strict
 npm install
-npm run type-check        # Run tsc --noEmit in strict mode
-npm run build             # Compile to JavaScript
-node dist/index.js        # Run compiled code
+npm run type-check # Run tsc --noEmit in strict mode
+npm run build # Compile to JavaScript
+node dist/index.js # Run compiled code
 ```
 
 ## Configuration
@@ -28,20 +28,20 @@ node dist/index.js        # Run compiled code
 tsconfig.json with all strictness options:
 ```json
 {
-  "compilerOptions": {
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-    "exactOptionalPropertyTypes": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true
-  }
+ "compilerOptions": {
+ "strict": true,
+ "noImplicitAny": true,
+ "strictNullChecks": true,
+ "strictFunctionTypes": true,
+ "strictPropertyInitialization": true,
+ "noImplicitThis": true,
+ "alwaysStrict": true,
+ "exactOptionalPropertyTypes": true,
+ "noUncheckedIndexedAccess": true,
+ "noImplicitReturns": true,
+ "noUnusedLocals": true,
+ "noUnusedParameters": true
+ }
 }
 ```
 

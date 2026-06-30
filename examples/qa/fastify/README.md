@@ -4,13 +4,13 @@ Tests the SDK in a Fastify server environment.
 
 ## What This Tests
 
-- ✓ Fastify route handlers
-- ✓ Async/await in handlers
-- ✓ Custom error handling
-- ✓ Session management
-- ✓ Concurrent requests
-- ✓ JSON response types
-- ✓ HTTP status codes
+- Fastify route handlers
+- Async/await in handlers
+- Custom error handling
+- Session management
+- Concurrent requests
+- JSON response types
+- HTTP status codes
 
 ## How to Run
 

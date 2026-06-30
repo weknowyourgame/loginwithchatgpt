@@ -4,13 +4,13 @@ Tests the device-code authentication flow for headless/web environments.
 
 ## What This Tests
 
-- ✓ `startDeviceLogin()` function
-- ✓ User code display
-- ✓ Polling behavior
-- ✓ 15-minute timeout
-- ✓ Cancellation
-- ✓ Multiple concurrent device codes
-- ✓ Session persistence after device auth
+- `startDeviceLogin()` function
+- User code display
+- Polling behavior
+- 15-minute timeout
+- Cancellation
+- Multiple concurrent device codes
+- Session persistence after device auth
 
 ## How to Run
 

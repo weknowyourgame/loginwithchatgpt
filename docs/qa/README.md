@@ -4,7 +4,7 @@
 
 ---
 
-## 📋 Start Here
+## Start Here
 
 - **[QA_INDEX.md](./QA_INDEX.md)** - Master index of all QA artifacts
 - **[QA_SUMMARY.md](./QA_SUMMARY.md)** - Executive overview & recommendations
@@ -13,7 +13,7 @@
 
 ---
 
-## 🧪 Examples
+## Examples
 
 Nine comprehensive working examples in `examples/qa/`:
 
@@ -37,14 +37,14 @@ Each example has its own `README.md` with:
 
 ---
 
-## 📊 Quick Summary
+## Quick Summary
 
 **Overall Score**: 6.5/10 (Pre-release)
-- Security: 8/10 ✅
-- API Design: 8.5/10 ✅
-- TypeScript: 9/10 ✅
-- Error Handling: 6/10 ⚠️
-- Production Ready: 5/10 ❌
+- Security: 8/10 
+- API Design: 8.5/10 
+- TypeScript: 9/10 
+- Error Handling: 6/10 
+- Production Ready: 5/10 
 
 **Issues Found**: 15 total
 - 6 critical (must fix before release)
@@ -57,7 +57,7 @@ Each example has its own `README.md` with:
 
 ---
 
-## 🎯 For Different Audiences
+## For Different Audiences
 
 ### Maintainers
 1. Read **SDK_REVIEW.md** for full assessment
@@ -85,18 +85,18 @@ Each example has its own `README.md` with:
 
 ---
 
-## 📈 Key Findings
+## Key Findings
 
-### ✅ Strengths
-- ✅ PKCE textbook correct
-- ✅ AES-256-GCM encryption solid
-- ✅ Clean, minimal API surface
-- ✅ First-class TypeScript support
-- ✅ Smart 60-second token refresh buffer
-- ✅ Cross-platform (Keychain + file)
-- ✅ Zero security vulnerabilities
+### Strengths
+- PKCE textbook correct
+- AES-256-GCM encryption solid
+- Clean, minimal API surface
+- First-class TypeScript support
+- Smart 60-second token refresh buffer
+- Cross-platform (Keychain + file)
+- Zero security vulnerabilities
 
-### 🔴 Critical Issues (Must Fix)
+### Critical Issues (Must Fix)
 1. Port 1455 binding failure → no fallback/recovery
 2. IPv6 not supported → only 127.0.0.1
 3. Token refresh race condition → concurrent access conflicts
@@ -106,33 +106,33 @@ Each example has its own `README.md` with:
 
 ---
 
-## 📚 Report Structure
+## Report Structure
 
 ```
 docs/qa/
-├── README.md (this file)
-├── QA_INDEX.md (master navigation guide)
-├── QA_SUMMARY.md (executive summary)
-├── SDK_REVIEW.md (technical deep-dive, 500+ lines)
-└── QA_BRAIN.md (complete analysis, 6000+ lines)
+ README.md (this file)
+ QA_INDEX.md (master navigation guide)
+ QA_SUMMARY.md (executive summary)
+ SDK_REVIEW.md (technical deep-dive, 500+ lines)
+ QA_BRAIN.md (complete analysis, 6000+ lines)
 
 examples/
-├── web/                 (original Next.js example)
-└── qa/                  (QA testing examples)
-    ├── cli/
-    ├── react-vite/
-    ├── express/
-    ├── fastify/
-    ├── device-code/
-    ├── headless-login/
-    ├── typescript-strict/
-    ├── minimal/
-    └── error-scenarios/
+ web/ (original Next.js example)
+ qa/ (QA testing examples)
+ cli/
+ react-vite/
+ express/
+ fastify/
+ device-code/
+ headless-login/
+ typescript-strict/
+ minimal/
+ error-scenarios/
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ```bash
 # View the master index
@@ -157,23 +157,23 @@ npm run dev
 
 ---
 
-## 📊 By the Numbers
+## By the Numbers
 
 - **Reports**: 4 comprehensive (1200+ lines)
 - **Examples**: 9 working (complete with tests)
 - **Test Scenarios**: 30+ edge cases
 - **Issues Found**: 15 (6 critical, 9 high)
-- **Security Issues**: 0 ✅
+- **Security Issues**: 0 
 - **Analysis Lines**: 7000+
 - **Time Invested**: ~6 hours of detailed QA
 
 ---
 
-## 🎯 Verdict
+## Verdict
 
-**Status**: Pre-release (6.5/10)  
-**Best For**: Early adoption, learning, feature testing  
-**Not For**: Critical production systems  
+**Status**: Pre-release (6.5/10) 
+**Best For**: Early adoption, learning, feature testing 
+**Not For**: Critical production systems 
 **Path**: 6-9 weeks to v1.0 production-ready
 
 ---

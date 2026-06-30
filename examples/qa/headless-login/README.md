@@ -4,13 +4,13 @@ Tests the manual PKCE flow for environments without a loopback server.
 
 ## What This Tests
 
-- ✓ `startLogin()` function
-- ✓ Manual URL copy/paste workflow
-- ✓ Extraction of code from full redirect URL or raw code
-- ✓ CSRF protection (state validation)
-- ✓ SSH/CI/container environments
-- ✓ No browser automation required
-- ✓ Works over network tunnels
+- `startLogin()` function
+- Manual URL copy/paste workflow
+- Extraction of code from full redirect URL or raw code
+- CSRF protection (state validation)
+- SSH/CI/container environments
+- No browser automation required
+- Works over network tunnels
 
 ## How to Run
 
@@ -28,8 +28,8 @@ npm run start
 # Visit the URL, approve, get redirected to callback
 # Paste the redirect URL or just the code
 
-npm run test-manual    # Test manual code entry
-npm run test-ssh       # Simulate SSH scenario
+npm run test-manual # Test manual code entry
+npm run test-ssh # Simulate SSH scenario
 ```
 
 ## Expected Behavior
@@ -46,11 +46,11 @@ npm run test-ssh       # Simulate SSH scenario
 
 | Input | Should Work |
 |-------|------------|
-| Raw code: `abc123xyz` | ✓ Extract code |
-| Full URL: `http://localhost:1455/auth/callback?code=abc&state=xyz` | ✓ Extract code + validate state |
-| Wrong state | ✗ CSRF error |
-| No code in URL | ✗ Parsing error |
-| Malformed input | ✗ Clear error message |
+| Raw code: `abc123xyz` | Extract code |
+| Full URL: `http://localhost:1455/auth/callback?code=abc&state=xyz` | Extract code + validate state |
+| Wrong state | CSRF error |
+| No code in URL | Parsing error |
+| Malformed input | Clear error message |
 
 ## Use Cases
 

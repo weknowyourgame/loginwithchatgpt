@@ -12,9 +12,9 @@ Complete guide to running QA examples and understanding test results.
 # CLI example - simplest to start
 cd examples/qa/cli
 npm install
-npm run login          # Start authentication
-npm run whoami          # Check current session
-npm run logout          # Clear tokens
+npm run login # Start authentication
+npm run whoami # Check current session
+npm run logout # Clear tokens
 ```
 
 ### Run React Example
@@ -23,7 +23,7 @@ npm run logout          # Clear tokens
 # React + Vite
 cd examples/qa/react-vite
 npm install
-npm run dev            # Opens http://localhost:5173
+npm run dev # Opens http://localhost:5173
 # Then click "Login with ChatGPT" button in browser
 ```
 
@@ -49,14 +49,14 @@ curl -X POST http://localhost:3000/login
 
 **Commands**:
 ```bash
-npm run login              # Start OAuth flow (loopback)
-npm run whoami             # Show current session
-npm run chat "hello"       # Send a message to ChatGPT
-npm run stream "hello"     # Stream response (fast)
-npm run refresh            # Manually refresh token
-npm run logout             # Clear stored tokens
-npm run test-port          # Test port conflict handling
-npm run test-corruption    # Test corrupted token recovery
+npm run login # Start OAuth flow (loopback)
+npm run whoami # Show current session
+npm run chat "hello" # Send a message to ChatGPT
+npm run stream "hello" # Stream response (fast)
+npm run refresh # Manually refresh token
+npm run logout # Clear stored tokens
+npm run test-port # Test port conflict handling
+npm run test-corruption # Test corrupted token recovery
 ```
 
 **Expected Behavior**:
@@ -78,9 +78,9 @@ npm run test-corruption    # Test corrupted token recovery
 
 **Commands**:
 ```bash
-npm run dev                # Start dev server
-npm run build              # Build for production
-npm run preview            # Preview production build
+npm run dev # Start dev server
+npm run build # Build for production
+npm run preview # Preview production build
 ```
 
 **Expected Behavior**:
@@ -104,11 +104,11 @@ npm run preview            # Preview production build
 
 **Endpoints**:
 ```bash
-GET    /status           # Check if authenticated
-POST   /login            # Start device-code flow
-GET    /whoami           # Get current session (401 if not auth)
-POST   /logout           # Clear session
-POST   /test-concurrent  # Test 3 concurrent logins
+GET /status # Check if authenticated
+POST /login # Start device-code flow
+GET /whoami # Get current session (401 if not auth)
+POST /logout # Clear session
+POST /test-concurrent # Test 3 concurrent logins
 ```
 
 **Example Usage**:
@@ -145,7 +145,7 @@ curl -X POST http://localhost:3000/test-concurrent
 **Same endpoints as Express** - Same API but using Fastify instead
 
 ```bash
-npm run dev                # Start on http://localhost:3001
+npm run dev # Start on http://localhost:3001
 ```
 
 **Differences from Express**:
@@ -160,8 +160,8 @@ npm run dev                # Start on http://localhost:3001
 
 **Commands**:
 ```bash
-npm run start              # Start device-code flow
-npm run test-concurrent    # Test 3 concurrent flows
+npm run start # Start device-code flow
+npm run test-concurrent # Test 3 concurrent flows
 ```
 
 **Expected Behavior**:
@@ -187,8 +187,8 @@ npm run test-concurrent    # Test 3 concurrent flows
 
 **Commands**:
 ```bash
-npm run start              # Start headless flow
-npm run test-manual        # Test code parsing
+npm run start # Start headless flow
+npm run test-manual # Test code parsing
 ```
 
 **Expected Behavior**:
@@ -219,9 +219,9 @@ npm run start
 
 **Commands**:
 ```bash
-npm run type-check        # Verify types (tsc --noEmit)
-npm run build             # Compile TypeScript
-npm run start             # Run compiled JS
+npm run type-check # Verify types (tsc --noEmit)
+npm run build # Compile TypeScript
+npm run start # Run compiled JS
 ```
 
 **Expected Behavior**:
@@ -242,8 +242,8 @@ npm run start             # Run compiled JS
 
 **Commands**:
 ```bash
-node index.js login        # Authenticate
-node index.js              # Make API call
+node index.js login # Authenticate
+node index.js # Make API call
 ```
 
 **Code**:
@@ -251,15 +251,15 @@ node index.js              # Make API call
 import { login, getSession, createClient } from "loginwithchatgpt";
 
 if (process.argv[2] === "login") {
-  await login();
-  console.log("✅ Authenticated");
+ await login();
+ console.log(" Authenticated");
 } else {
-  const s = await getSession();
-  if (!s) {
-    console.log("❌ Not logged in");
-    process.exit(1);
-  }
-  console.log(await createClient().respond("Hello!"));
+ const s = await getSession();
+ if (!s) {
+ console.log(" Not logged in");
+ process.exit(1);
+ }
+ console.log(await createClient().respond("Hello!"));
 }
 ```
 
@@ -275,9 +275,9 @@ if (process.argv[2] === "login") {
 
 **Commands**:
 ```bash
-npm run test-port          # Test port conflict
-npm run test-corruption    # Test corrupted token
-npm run test-timeout       # Test timeout handling
+npm run test-port # Test port conflict
+npm run test-corruption # Test corrupted token
+npm run test-timeout # Test timeout handling
 ```
 
 **Each Test Shows**:
@@ -298,20 +298,20 @@ cd examples/qa
 
 # Test each example quickly
 for dir in cli minimal typescript-strict device-code error-scenarios; do
-  echo "Testing $dir..."
-  cd "$dir"
-  npm install --silent
-  echo "✅ $dir installed"
-  cd ..
+ echo "Testing $dir..."
+ cd "$dir"
+ npm install --silent
+ echo " $dir installed"
+ cd ..
 done
 
 echo ""
-echo "✅ All examples installed successfully"
+echo " All examples installed successfully"
 echo ""
 echo "Next steps:"
-echo "  - CLI: cd cli && npm run login"
-echo "  - React: cd react-vite && npm run dev"
-echo "  - Express: cd express && npm run dev"
+echo " - CLI: cd cli && npm run login"
+echo " - React: cd react-vite && npm run dev"
+echo " - Express: cd express && npm run dev"
 ```
 
 ---
@@ -319,10 +319,10 @@ echo "  - Express: cd express && npm run dev"
 ## Interpreting Results
 
 ### Success Indicators
-- ✅ Example runs without errors
-- ✅ Expected output matches documentation
-- ✅ No unhandled exceptions
-- ✅ Cleanup works (tokens saved/cleared)
+- Example runs without errors
+- Expected output matches documentation
+- No unhandled exceptions
+- Cleanup works (tokens saved/cleared)
 
 ### Common Failures
 
@@ -386,16 +386,16 @@ If you find problems:
 1. **Reproduce** in a specific example
 2. **Document** exact steps and error
 3. **Include** environment info:
-   ```bash
-   node --version
-   npm --version
-   uname -a
-   ```
+ ```bash
+ node --version
+ npm --version
+ uname -a
+ ```
 4. **Report** in GitHub issues with:
-   - Which example
-   - What command you ran
-   - Full error output
-   - Expected vs actual behavior
+ - Which example
+ - What command you ran
+ - Full error output
+ - Expected vs actual behavior
 
 ---
 

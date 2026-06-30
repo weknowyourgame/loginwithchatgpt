@@ -4,15 +4,15 @@ Tests the SDK in an Express.js server environment with session management.
 
 ## What This Tests
 
-- ✓ Custom TokenStore implementation
-- ✓ Server-side session management
-- ✓ Multiple concurrent auth requests
-- ✓ Express middleware integration
-- ✓ Protected routes
-- ✓ Error handling in express
-- ✓ Session timeout
-- ✓ Race conditions in concurrent requests
-- ✓ Token refresh in request handler
+- Custom TokenStore implementation
+- Server-side session management
+- Multiple concurrent auth requests
+- Express middleware integration
+- Protected routes
+- Error handling in express
+- Session timeout
+- Race conditions in concurrent requests
+- Token refresh in request handler
 
 ## How to Run
 
@@ -22,9 +22,9 @@ npm install
 npm run dev
 
 # In another terminal:
-curl http://localhost:3000/status          # Check session
-curl -X POST http://localhost:3000/login   # Start device-code login
-curl http://localhost:3000/whoami           # Check auth (after login)
+curl http://localhost:3000/status # Check session
+curl -X POST http://localhost:3000/login # Start device-code login
+curl http://localhost:3000/whoami # Check auth (after login)
 ```
 
 ## Expected Behavior

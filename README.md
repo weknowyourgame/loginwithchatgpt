@@ -4,15 +4,15 @@ A drop-in "Login with ChatGPT" button that lets your app's users power its AI fe
 their own ChatGPT subscription. The user signs in with their ChatGPT account, and your AI
 calls bill against their Plus/Pro plan instead of an API key you pay for.
 
-It uses OpenAI's Codex OAuth flow (PKCE against `auth.openai.com`) - the same mechanism the  
-Codex CLI uses. One package, three entry points: a headless engine, a React component, and  
+It uses OpenAI's Codex OAuth flow (PKCE against `auth.openai.com`) - the same mechanism the 
+Codex CLI uses. One package, three entry points: a headless engine, a React component, and 
 Next.js route handlers.
 
 ## Scope
 
-This is strictly "let your users bring their own ChatGPT subscription into your app." Each  
-user logs in with their own account, on their own machine, and spends their own subscription.  
-It is built for local-first contexts desktop apps, Electron, CLIs, and local-first Next.js  
+This is strictly "let your users bring their own ChatGPT subscription into your app." Each 
+user logs in with their own account, on their own machine, and spends their own subscription. 
+It is built for local-first contexts desktop apps, Electron, CLIs, and local-first Next.js 
 dev tools where the loopback OAuth redirect lands on the user's own machine.
 
 It is not a way to pool or resell subscriptions through a central server. That is
@@ -45,7 +45,7 @@ Then drop the button anywhere in your UI:
 import { LoginWithChatGPT } from "loginwithchatgpt/react";
 
 export default function Page() {
-  return <LoginWithChatGPT onConnected={(s) => console.log(s.account.email)} />;
+ return <LoginWithChatGPT onConnected={(s) => console.log(s.account.email)} />;
 }
 ```
 
@@ -58,9 +58,9 @@ import { createClient } from "loginwithchatgpt";
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
-  const { prompt } = await req.json();
-  const text = await createClient().respond(prompt);
-  return Response.json({ text });
+ const { prompt } = await req.json();
+ const text = await createClient().respond(prompt);
+ return Response.json({ text });
 }
 ```
 
@@ -73,11 +73,11 @@ import { LoginWithChatGPT, useChatGPTAuth } from "loginwithchatgpt/react";
 `<LoginWithChatGPT />`
 
 
-| Prop          | Type                | Description                                          |
+| Prop | Type | Description |
 | ------------- | ------------------- | ---------------------------------------------------- |
-| `onConnected` | `(session) => void` | Called once when the user connects.                  |
-| `basePath`    | `string`            | Route handler base path. Defaults to `/api/chatgpt`. |
-| `className`   | `string`            | Applied to the button.                               |
+| `onConnected` | `(session) => void` | Called once when the user connects. |
+| `basePath` | `string` | Route handler base path. Defaults to `/api/chatgpt`. |
+| `className` | `string` | Applied to the button. |
 
 
 `useChatGPTAuth(options?)` returns `{ status, account, plan, error, login, logout }`, where
@@ -91,15 +91,15 @@ import { login, logout, getSession, refresh, createClient } from "loginwithchatg
 ```
 
 
-| Function               | Description                                                          |
+| Function | Description |
 | ---------------------- | -------------------------------------------------------------------- |
-| `login(options?)`      | Runs the loopback OAuth flow and stores tokens. Returns the session. |
-| `startLogin(options?)` | Headless variant for SSH/containers/CI. Returns `{ url, complete }`.  |
+| `login(options?)` | Runs the loopback OAuth flow and stores tokens. Returns the session. |
+| `startLogin(options?)` | Headless variant for SSH/containers/CI. Returns `{ url, complete }`. |
 | `startDeviceLogin(options?)` | Device-code flow for web/headless. Returns `{ userCode, verificationUrl, wait }`. |
-| `logout(store?)`       | Clears stored tokens.                                                |
-| `getSession(store?)`   | Returns the current session, or `null`.                              |
-| `refresh(store?)`      | Forces a token refresh.                                              |
-| `createClient(store?)` | Returns a client with `respond(prompt)` and `stream(prompt)`.        |
+| `logout(store?)` | Clears stored tokens. |
+| `getSession(store?)` | Returns the current session, or `null`. |
+| `refresh(store?)` | Forces a token refresh. |
+| `createClient(store?)` | Returns a client with `respond(prompt)` and `stream(prompt)`. |
 
 
 The client auto-refreshes tokens before expiry and retries once on a 401, so callers never
@@ -108,13 +108,13 @@ handle tokens directly.
 ## How it works
 
 ```
-<LoginWithChatGPT />  ->  /api/chatgpt/*  ->  createHandlers (next)  ->  core engine
-   browser (UI)            HTTP                server (Node)            PKCE + loopback
+<LoginWithChatGPT /> -> /api/chatgpt/* -> createHandlers (next) -> core engine
+ browser (UI) HTTP server (Node) PKCE + loopback
 ```
 
 1. The button calls the route handler, which runs `login()` on the server.
 2. `login()` generates a PKCE pair, opens `auth.openai.com`, and starts a one-shot loopback
-  server on `127.0.0.1:1455` to catch the redirect.
+ server on `127.0.0.1:1455` to catch the redirect.
 3. The returned code is exchanged for tokens, which are stored encrypted.
 4. `createClient()` attaches the access token to requests and refreshes it as needed.
 
@@ -136,11 +136,11 @@ The default is `encryptedFileStore`; a plaintext `fileStore` is also exported fo
 ## Package exports
 
 
-| Entry                    | Runtime | Contents                                              |
+| Entry | Runtime | Contents |
 | ------------------------ | ------- | ----------------------------------------------------- |
-| `loginwithchatgpt`       | Node    | engine: `login`, `getSession`, `createClient`, stores |
-| `loginwithchatgpt/react` | Browser | `LoginWithChatGPT`, `useChatGPTAuth`                  |
-| `loginwithchatgpt/next`  | Node    | `createHandlers` for App Router                       |
+| `loginwithchatgpt` | Node | engine: `login`, `getSession`, `createClient`, stores |
+| `loginwithchatgpt/react` | Browser | `LoginWithChatGPT`, `useChatGPTAuth` |
+| `loginwithchatgpt/next` | Node | `createHandlers` for App Router |
 
 
 ## Example
@@ -168,14 +168,14 @@ There are three ways to authenticate, matching different environments:
 The repo includes a small CLI that exercises the engine directly:
 
 ```bash
-bun run login              # loopback flow — auto-opens browser (use this on your Mac)
-bun run login --device     # device-code flow — shows a short code, works anywhere
-bun run login --headless   # headless paste — for SSH/containers/CI with no browser
-bun run whoami             # show the connected account and plan
-bun run call               # one AI call billed to the subscription
-bun run stream             # the same call, streamed
-bun run refresh            # force a token refresh
-bun run logout             # clear stored tokens
+bun run login # loopback flow — auto-opens browser (use this on your Mac)
+bun run login --device # device-code flow — shows a short code, works anywhere
+bun run login --headless # headless paste — for SSH/containers/CI with no browser
+bun run whoami # show the connected account and plan
+bun run call # one AI call billed to the subscription
+bun run stream # the same call, streamed
+bun run refresh # force a token refresh
+bun run logout # clear stored tokens
 ```
 
 ## Models
@@ -197,7 +197,7 @@ const text = await createClient().respond("Refactor this", { model: "gpt-5.4-min
 
 // Streaming
 for await (const delta of createClient().stream("Write tests", { model: "gpt-5.4" })) {
-  process.stdout.write(delta);
+ process.stdout.write(delta);
 }
 ```
 
@@ -239,10 +239,10 @@ Comprehensive examples created during SDK testing (production-grade):
 | **Error Scenarios** | [examples/qa/error-scenarios](./examples/qa/error-scenarios) | Port binding, corruption, timeout edge cases | `npm run test-port` |
 
 Each example has:
-- ✅ Complete working code
-- ✅ Detailed `README.md` with expected behavior
-- ✅ Test scenarios for success and failure paths
-- ✅ Common issues and troubleshooting
+- Complete working code
+- Detailed `README.md` with expected behavior
+- Test scenarios for success and failure paths
+- Common issues and troubleshooting
 
 **Get started**: `cd examples/qa/<example> && npm install && npm run <command>`
 
@@ -252,34 +252,34 @@ Each example has:
 
 This package has been thoroughly tested by a senior SDK QA engineer. All findings, analysis, and working examples are documented:
 
-### 📋 Main QA Documentation
+### Main QA Documentation
 
 - **[docs/qa/README.md](./docs/qa/README.md)** - Overview of all QA artifacts
 - **[docs/qa/QA_INDEX.md](./docs/qa/QA_INDEX.md)** - Master index and navigation guide
 - **[docs/qa/QA_SUMMARY.md](./docs/qa/QA_SUMMARY.md)** - Executive summary for decision-makers
 - **[docs/qa/SDK_REVIEW.md](./docs/qa/SDK_REVIEW.md)** - Technical assessment (500+ lines)
-  - Scoring across 12 dimensions
-  - 6 critical issues identified
-  - 9 high-priority issues
-  - Security audit results
-  - Performance analysis
-  - Path to v1.0
+ - Scoring across 12 dimensions
+ - 6 critical issues identified
+ - 9 high-priority issues
+ - Security audit results
+ - Performance analysis
+ - Path to v1.0
 - **[docs/qa/QA_BRAIN.md](./docs/qa/QA_BRAIN.md)** - Complete analysis document (6000+ lines)
 
-### 🎯 Quick Assessment
+### Quick Assessment
 
 | Dimension | Score | Status |
 |-----------|-------|--------|
-| Overall | 6.5/10 | 🟡 Pre-release |
-| Production Ready | 5/10 | 🔴 Needs hardening |
-| Security | 8/10 | 🟢 Strong |
-| API Design | 8.5/10 | 🟢 Excellent |
-| TypeScript | 9/10 | 🟢 First-class |
-| Error Handling | 6/10 | 🟡 Fair |
-| React Integration | 8/10 | 🟢 Good |
-| Performance | 8/10 | 🟢 Good |
+| Overall | 6.5/10 | Pre-release |
+| Production Ready | 5/10 | Needs hardening |
+| Security | 8/10 | Strong |
+| API Design | 8.5/10 | Excellent |
+| TypeScript | 9/10 | First-class |
+| Error Handling | 6/10 | Fair |
+| React Integration | 8/10 | Good |
+| Performance | 8/10 | Good |
 
-### 🔴 Critical Issues (Pre-Release)
+### Critical Issues (Pre-Release)
 
 **Must fix before production:**
 1. Port 1455 binding failure (no fallback)
@@ -289,26 +289,26 @@ This package has been thoroughly tested by a senior SDK QA engineer. All finding
 5. Device code polling no backoff
 6. Encryption key cached in memory
 
-### ✅ Strengths
+### Strengths
 
-- ✅ PKCE implementation (textbook correct)
-- ✅ AES-256-GCM encryption (industry best practice)
-- ✅ Clean, minimal API
-- ✅ First-class TypeScript support
-- ✅ Smart 60-second token refresh buffer
-- ✅ Cross-platform (Keychain + file)
-- ✅ Zero security vulnerabilities
+- PKCE implementation (textbook correct)
+- AES-256-GCM encryption (industry best practice)
+- Clean, minimal API
+- First-class TypeScript support
+- Smart 60-second token refresh buffer
+- Cross-platform (Keychain + file)
+- Zero security vulnerabilities
 
-### 📊 Test Coverage
+### Test Coverage
 
-- ✅ 100% of APIs tested (all 7 core functions)
-- ✅ 100% of auth flows (loopback, device-code, headless)
-- ✅ 100% TypeScript strict mode
-- ✅ 70% error scenarios (15+ edge cases)
-- ✅ 95% security audit
-- ✅ 0 security vulnerabilities found
+- 100% of APIs tested (all 7 core functions)
+- 100% of auth flows (loopback, device-code, headless)
+- 100% TypeScript strict mode
+- 70% error scenarios (15+ edge cases)
+- 95% security audit
+- 0 security vulnerabilities found
 
-### 🚀 For Integrators
+### For Integrators
 
 **If you're evaluating this package:**
 1. Read [docs/qa/QA_SUMMARY.md](./docs/qa/QA_SUMMARY.md) for executive overview
@@ -330,15 +330,15 @@ This package has been thoroughly tested by a senior SDK QA engineer. All finding
 
 ```
 loginwithchatgpt/
-├── src/                    # SDK source code
-├── dist/                   # Compiled output
-├── examples/
-│   ├── web/               # Original Next.js example
-│   └── qa/                # 9 QA testing examples
-├── docs/
-│   └── qa/                # QA testing documentation
-├── website/               # Documentation site
-└── [other files]
+ src/ # SDK source code
+ dist/ # Compiled output
+ examples/
+ web/ # Original Next.js example
+ qa/ # 9 QA testing examples
+ docs/
+ qa/ # QA testing documentation
+ website/ # Documentation site
+ [other files]
 ```
 
 ## License
