@@ -48,7 +48,7 @@ export interface DeviceLogin {
   /** The page the user opens to enter the code. */
   verificationUrl: string;
   /** Poll until the user authorizes, then exchange and store tokens. */
-  wait(): Promise<Session>;
+  wait(signal?: AbortSignal): Promise<Session>;
 }
 
 export interface DeviceStart {
@@ -132,37 +132,56 @@ export async function startDeviceLogin(opts: { store?: TokenStore } = {}): Promi
   return {
     userCode,
     verificationUrl: config.deviceVerificationUrl,
-    async wait(): Promise<Session> {
+    async wait(signal?: AbortSignal): Promise<Session> {
       const deadline = Date.now() + 15 * 60_000;
       let currentInterval = Math.max(interval, 1000);
       const maxInterval = Math.min(interval * 8, 30000);
 
-      while (Date.now() < deadline) {
-        const poll = await fetchWithTimeout(config.devicePollUrl, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({ device_auth_id: deviceAuthId, user_code: userCode }),
-        });
-
-        if (poll.status === 403 || poll.status === 404) {
-          await new Promise((r) => setTimeout(r, currentInterval));
-          currentInterval = Math.min(currentInterval * 1.5, maxInterval);
-          continue;
-        }
-        if (!poll.ok) {
-          throw new Error(`Device auth poll failed: ${poll.status} ${await poll.text()}`);
-        }
-
-        const success = (await poll.json()) as PollSuccess;
-        const tokens = await exchangeCode(
-          success.authorization_code,
-          success.code_verifier,
-          config.deviceRedirectUri,
-        );
-        await store.save(tokens);
-        return toSession(tokens);
+      if (signal?.aborted) {
+        throw new Error("Device authorization was cancelled");
       }
-      throw new Error("Device authorization timed out.");
+
+      const onAbort = () => {
+        throw new Error("Device authorization was cancelled");
+      };
+
+      signal?.addEventListener("abort", onAbort);
+
+      try {
+        while (Date.now() < deadline) {
+          if (signal?.aborted) {
+            throw new Error("Device authorization was cancelled");
+          }
+
+          const poll = await fetchWithTimeout(config.devicePollUrl, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ device_auth_id: deviceAuthId, user_code: userCode }),
+            signal,
+          });
+
+          if (poll.status === 403 || poll.status === 404) {
+            await new Promise((r) => setTimeout(r, currentInterval));
+            currentInterval = Math.min(currentInterval * 1.5, maxInterval);
+            continue;
+          }
+          if (!poll.ok) {
+            throw new Error(`Device auth poll failed: ${poll.status} ${await poll.text()}`);
+          }
+
+          const success = (await poll.json()) as PollSuccess;
+          const tokens = await exchangeCode(
+            success.authorization_code,
+            success.code_verifier,
+            config.deviceRedirectUri,
+          );
+          await store.save(tokens);
+          return toSession(tokens);
+        }
+        throw new Error("Device authorization timed out.");
+      } finally {
+        signal?.removeEventListener("abort", onAbort);
+      }
     },
   };
 }

@@ -24,27 +24,68 @@ const action = (req: Request) => new URL(req.url).pathname.split("/").filter(Boo
  *
  * Local-first only: login() runs the loopback flow on the same machine as the server.
  */
+let loginInProgress: Promise<unknown> | null = null;
+
 export function createHandlers(options: NextHandlerOptions = {}) {
   const { store } = options;
 
   async function GET(req: Request): Promise<Response> {
-    if (action(req) === "session") return json(await getSession(store));
-    return json({ error: "Not found" }, { status: 404 });
+    try {
+      switch (action(req)) {
+        case "session":
+          return json(await getSession(store));
+        default:
+          return json({ error: "Not found" }, { status: 404 });
+      }
+    } catch (err) {
+      console.error("GET handler error:", err);
+      return json(
+        { error: err instanceof Error ? err.message : "Internal server error" },
+        { status: 500 }
+      );
+    }
   }
 
   async function POST(req: Request): Promise<Response> {
-    switch (action(req)) {
-      case "login":
-        try {
-          return json(await login({ ...options.loginOptions, store }));
-        } catch (e) {
-          return json({ error: e instanceof Error ? e.message : "Login failed" }, { status: 500 });
-        }
-      case "logout":
-        await logout(store);
-        return json({ ok: true });
-      default:
-        return json({ error: "Not found" }, { status: 404 });
+    try {
+      switch (action(req)) {
+        case "login":
+          if (loginInProgress) {
+            return json(
+              { error: "Login already in progress" },
+              { status: 409 }
+            );
+          }
+
+          loginInProgress = (async () => {
+            try {
+              return await login({ ...options.loginOptions, store });
+            } finally {
+              loginInProgress = null;
+            }
+          })();
+
+          const result = await loginInProgress;
+          return json(result);
+
+        case "logout":
+          try {
+            await logout(store);
+            return json({ ok: true });
+          } catch (err) {
+            console.error("Logout error:", err);
+            return json({ ok: false }, { status: 500 });
+          }
+
+        default:
+          return json({ error: "Not found" }, { status: 404 });
+      }
+    } catch (err) {
+      console.error("POST handler error:", err);
+      return json(
+        { error: err instanceof Error ? err.message : "Internal server error" },
+        { status: 500 }
+      );
     }
   }
 

@@ -39,21 +39,40 @@ function openSystemBrowser(url: string): void {
   }
 }
 
+let loginInProgress: Promise<Session> | null = null;
+
 /** Run the full loopback OAuth flow and persist the resulting tokens. */
 export async function login(opts: LoginOptions = {}): Promise<Session> {
+  if (loginInProgress) {
+    throw new Error("Login already in progress. Please wait for it to complete or try again.");
+  }
+
   const store = opts.store ?? defaultStore;
   const pkce = createPkce();
   const url = authorizeUrl(pkce);
 
-  // Start listening before the browser opens to avoid missing a fast redirect.
-  const codePromise = waitForCode(pkce.state);
-  opts.onUrl?.(url);
-  if (opts.openBrowser !== false) await openSystemBrowser(url);
+  loginInProgress = (async () => {
+    try {
+      const codePromise = waitForCode(pkce.state);
+      opts.onUrl?.(url);
+      if (opts.openBrowser !== false) {
+        try {
+          await openSystemBrowser(url);
+        } catch (err) {
+          // Browser open failed, but onUrl was called so user can visit manually
+        }
+      }
 
-  const code = await codePromise;
-  const tokens = await exchangeCode(code, pkce.verifier);
-  await store.save(tokens);
-  return toSession(tokens);
+      const code = await codePromise;
+      const tokens = await exchangeCode(code, pkce.verifier);
+      await store.save(tokens);
+      return toSession(tokens);
+    } finally {
+      loginInProgress = null;
+    }
+  })();
+
+  return loginInProgress;
 }
 
 export interface HeadlessLogin {

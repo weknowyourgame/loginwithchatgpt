@@ -23,6 +23,26 @@ export interface ChatGPTAuth {
  * Client-side auth state. Drives login/logout against the server route handlers;
  * never touches the engine directly (the browser can't run it).
  */
+const FETCH_TIMEOUT = 30000; // 30 seconds
+
+function fetchWithTimeout(url: string, options: RequestInit = {}) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
+
+  return fetch(url, { ...options, signal: controller.signal })
+    .then((res) => {
+      clearTimeout(timeoutId);
+      return res;
+    })
+    .catch((err) => {
+      clearTimeout(timeoutId);
+      if (err.name === "AbortError") {
+        throw new Error(`Request timed out after ${FETCH_TIMEOUT}ms`);
+      }
+      throw err;
+    });
+}
+
 export function useChatGPTAuth(options: UseChatGPTAuthOptions = {}): ChatGPTAuth {
   const basePath = options.basePath ?? "/api/chatgpt";
   const [status, setStatus] = useState<AuthStatus>("idle");
@@ -32,23 +52,35 @@ export function useChatGPTAuth(options: UseChatGPTAuthOptions = {}): ChatGPTAuth
   const apply = useCallback((s: Session | null) => {
     setSession(s);
     setStatus(s ? "connected" : "idle");
+    setError(undefined);
   }, []);
 
   useEffect(() => {
     let active = true;
-    fetch(`${basePath}/session`)
+    const controller = new AbortController();
+
+    fetchWithTimeout(`${basePath}/session`, { signal: controller.signal })
       .then((r) => (r.ok ? r.json() : null))
       .then((s) => active && apply(s as Session | null))
-      .catch(() => active && apply(null));
+      .catch((err) => {
+        if (active && err.name !== "AbortError") {
+          apply(null);
+        }
+      });
+
     return () => {
       active = false;
+      controller.abort();
     };
   }, [basePath, apply]);
 
   const login = useCallback(() => {
+    if (status === "connecting") return;
+
     setStatus("connecting");
     setError(undefined);
-    fetch(`${basePath}/login`, { method: "POST" })
+
+    fetchWithTimeout(`${basePath}/login`, { method: "POST" })
       .then((r) => {
         if (!r.ok) throw new Error(`Login failed: ${r.status}`);
         return r.json();
@@ -58,10 +90,15 @@ export function useChatGPTAuth(options: UseChatGPTAuthOptions = {}): ChatGPTAuth
         setStatus("error");
         setError(e instanceof Error ? e : new Error(String(e)));
       });
-  }, [basePath, apply]);
+  }, [basePath, apply, status]);
 
   const logout = useCallback(() => {
-    fetch(`${basePath}/logout`, { method: "POST" }).finally(() => apply(null));
+    setStatus("idle");
+    fetchWithTimeout(`${basePath}/logout`, { method: "POST" })
+      .catch((err) => {
+        console.error("Logout failed:", err);
+      })
+      .finally(() => apply(null));
   }, [basePath, apply]);
 
   return { status, account: session?.account, plan: session?.plan, error, login, logout };
