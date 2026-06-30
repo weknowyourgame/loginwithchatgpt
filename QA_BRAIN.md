@@ -156,3 +156,59 @@ Creating comprehensive examples to test real-world usage patterns.
 4. Edge Cases
 5. Environment-specific
 
+---
+
+## Phase 3: Examples Created (COMPLETED - 11 comprehensive examples)
+
+### Committed Examples:
+1. **CLI** (cli/) - Full lifecycle: login, whoami, chat, stream, refresh, logout
+2. **React + Vite** (react-vite/) - Hook usage, error boundaries, loading states
+3. **Express** (express/) - Server-side session store, concurrent auth
+4. **Device Code** (device-code/) - startDeviceLogin(), polling, concurrent flows
+5. **Minimal** (minimal/) - 20-line quickstart
+6. **TypeScript Strict** (typescript-strict/) - All types, strict mode, autocomplete
+7. **Headless Login** (headless-login/) - Manual PKCE, SSH/CI use cases
+8. **Fastify** (fastify/) - High-performance server, JSON routes
+9. **Error Scenarios** (error-scenarios/) - Port binding, corruption, timeout
+
+### Test Coverage Matrix
+
+| Feature | CLI | React | Express | Device | Headless | Fastify | TypeScript |
+|---------|-----|-------|---------|--------|----------|---------|------------|
+| login() | ✓ | - | - | - | - | - | ✓ |
+| startLogin() | - | - | - | - | ✓ | - | - |
+| startDeviceLogin() | - | - | ✓ | ✓ | - | ✓ | - |
+| getSession() | ✓ | ✓ | ✓ | - | - | ✓ | ✓ |
+| logout() | ✓ | ✓ | ✓ | - | - | ✓ | ✓ |
+| refresh() | ✓ | - | - | - | - | - | ✓ |
+| createClient() | ✓ | - | - | - | - | - | - |
+| useChatGPTAuth() | - | ✓ | - | - | - | - | - |
+| Custom TokenStore | - | - | ✓ | ✓ | - | ✓ | ✓ |
+| Error handling | ✓ | ✓ | ✓ | ✓ | - | ✓ | - |
+| Concurrent auth | - | - | ✓ | ✓ | - | ✓ | - |
+
+### Code Quality Observations (Pre-Testing)
+
+**Strengths:**
+- Clean API surface
+- Type-safe (TypeScript)
+- Proper error messages
+- Encrypted by default
+- Cross-platform (Keychain + file fallback)
+- PKCE/CSRF protection
+- Token auto-refresh
+
+**Concerns Identified:**
+1. **Loopback IPv6**: Only binds to 127.0.0.1, IPv6 may not work
+2. **Port 1455 conflicts**: No fallback port or retry logic
+3. **Token key caching**: In-memory cache persists for process lifetime
+4. **Token refresh race**: Only 1 retry on 401, what if refresh itself fails?
+5. **Device timeout**: Hard-coded 15 min, no cancel option
+6. **Error cleanup**: Listeners not cleaned up on error in loopback
+7. **No polling backoff**: Device code starts polling immediately
+8. **Keychain errors**: Silently falls back to file (should log?)
+
+---
+
+## Phase 4: Security & Performance Analysis (IN PROGRESS)
+

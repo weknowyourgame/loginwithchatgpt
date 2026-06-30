@@ -1,0 +1,13 @@
+{
+  "name": "fastify-example",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "fastify": "^4.24.3",
+    "loginwithchatgpt": "../../dist"
+  }
+}

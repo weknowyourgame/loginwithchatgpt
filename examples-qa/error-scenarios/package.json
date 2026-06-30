@@ -1,0 +1,16 @@
+{
+  "name": "error-scenarios",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test-port": "node test-port.js",
+    "test-corruption": "node test-corruption.js",
+    "test-timeout": "node test-timeout.js",
+    "test-csrf": "node test-csrf.js",
+    "test-all": "node test-all.js"
+  },
+  "dependencies": {
+    "loginwithchatgpt": "../../dist"
+  }
+}
